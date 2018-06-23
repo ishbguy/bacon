@@ -2,6 +2,8 @@
 # Copyright (c) 2018 Herbert Shen <ishbguy@hotmail.com> All Rights Reserved.
 # Released under the terms of the MIT License.
 
+hash git &>/dev/null || return 1
+
 export BASH_CONFIG_BAG_SRC="$(realpath "${BASH_SOURCE[0]}")"
 export BASH_CONFIG_BAG_DIR="$(dirname "$BASH_LS_CONFIG_SRC")"
 

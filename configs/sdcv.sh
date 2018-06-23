@@ -2,9 +2,7 @@
 # Copyright (c) 2018 Herbert Shen <ishbguy@hotmail.com> All Rights Reserved.
 # Released under the terms of the MIT License.
 
-for req in sdcv; do
-    hash "$req" &>/dev/null || return 1
-done
+hash sdcv &>/dev/null || return 1
 
 export BASH_CONFIG_SDCV_SRC="$(realpath "${BASH_SOURCE[0]}")"
 export BASH_CONFIG_SDCV_DIR="$(dirname "$BASH_CONFIG_SDCV_SRC")"
