@@ -130,16 +130,6 @@ alias tmxa='tmux attach-session'
 alias tmxk='tmux kill-session'
 alias tmxc='tmux capture-pane'
 
-# alias for stardict sdcv
-alias dict-oxford='sdcv -c -u oxford'
-alias dict-king='sdcv -c -u kingsoft-ce'
-alias dict-ldec='sdcv -c -u langdao-ec'
-alias dict-ldce='sdcv -c -u langdao-ce'
-alias dict-ec='sdcv -c -u lazyworm-ec'
-alias dict-ce='sdcv -c -u lazyworm-ce'
-alias dict-cb='sdcv -c -u stardict-cb'
-alias dict='sdcv -c -u stardict-cb'
-
 alias fullscreen='wmctrl -i -r $WINID -b toggle,fullscreen'
 
 # vim:set ft=sh ts=4 sw=4:
