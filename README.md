@@ -1,36 +1,38 @@
 # [bash-config](https://github.com/ishbguy/bash-config)
 
-[![Version][versvg]][ver] [![License][licsvg]][lic]
+[![License][licsvg]][lic]
 
-[versvg]: https://img.shields.io/badge/version-v0.1.0-lightgrey.svg
-[ver]: https://img.shields.io/badge/version-v0.1.0-lightgrey.svg
 [licsvg]: https://img.shields.io/badge/license-MIT-green.svg
 [lic]: https://github.com/ishbguy/bash-config/blob/master/LICENSE
+
+This is my daily used bash configuration.
 
 ## Table of Contents
 
 + [:art: Features](#art-features)
 + [:straight_ruler: Prerequisite](#straight_ruler-prerequisite)
 + [:rocket: Installation](#rocket-installation)
-+ [:memo: Configuration](#memo-configuration)
-+ [:notebook: Usage](#notebook-usage)
 + [:hibiscus: Contributing](#hibiscus-contributing)
 + [:boy: Authors](#boy-authors)
 + [:scroll: License](#scroll-license)
 
 ## :art: Features
 
-+ What an amazing thing!
++ Modular: aliases, variables, functions, etc.
++ Support pre-command functions.
++ Use [`bag`](https://github.com/ishbguy/bag) to manage package or plugin.
 
 ## :straight_ruler: Prerequisite
 
-> +
+> + `bash` 4.2 or later
+> + git
 
 ## :rocket: Installation
 
-## :memo: Configuration
-
-## :notebook: Usage
+```
+$ git clone https://github.com/ishbguy/bash-config /path/to/bash-config
+$ cd /path/to/bash-config && ./install.sh
+```
 
 ## :hibiscus: Contributing
 
