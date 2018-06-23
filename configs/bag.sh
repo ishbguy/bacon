@@ -2,8 +2,8 @@
 # Copyright (c) 2018 Herbert Shen <ishbguy@hotmail.com> All Rights Reserved.
 # Released under the terms of the MIT License.
 
-export BASH_BAG_CONFIG_SRC="$(realpath "${BASH_SOURCE[0]}")"
-export BASH_BAG_CONFIG_DIR="$(dirname "$BASH_LS_CONFIG_SRC")"
+export BASH_CONFIG_BAG_SRC="$(realpath "${BASH_SOURCE[0]}")"
+export BASH_CONFIG_BAG_DIR="$(dirname "$BASH_LS_CONFIG_SRC")"
 
 export PROJECTS_DIR=/samba/project
 export GIT_PROJECTS_DIR="$PROJECTS_DIR/git"
