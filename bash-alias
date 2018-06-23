@@ -39,16 +39,6 @@ alias po='popd'
 alias pp='pushd +1'
 alias pu='pushd'
 
-#alias for systemd
-alias scdis='systemctl disable'
-alias scen='systemctl enable'
-alias shut-1='ssh test1 poweroff'
-alias shut-2='ssh test2 poweroff'
-alias ssact='systemctl -l list-units'
-alias ssdis='systemctl --state disabled list-unit-files'
-alias ssen='systemctl --state enabled list-unit-files'
-alias suen='systemctl --user --state enabled list-unit-files'
-
 #alias for gpg
 #alias gpg='gpg --options ~/.gnupg/dirmngr.conf'
 
