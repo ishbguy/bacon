@@ -25,7 +25,8 @@ This is my daily used bash configuration.
 ## :straight_ruler: Prerequisite
 
 > + `bash` 4.2 or later
-> + git
+> + `git`
+> + `realpath`
 
 ## :rocket: Installation
 
