@@ -2,8 +2,8 @@
 # Copyright (c) 2018 Herbert Shen <ishbguy@hotmail.com> All Rights Reserved.
 # Released under the terms of the MIT License.
 
-declare -gr BASH_FUNCTIONS_ABS_SRC="$(realpath "${BASH_SOURCE[0]}")"
-declare -gr BASH_FUNCTIONS_ABS_DIR="$(dirname "$BASH_FUNCTIONS_ABS_SRC")"
+export BASH_FUNCTIONS_ABS_SRC="$(realpath "${BASH_SOURCE[0]}")"
+export BASH_FUNCTIONS_ABS_DIR="$(dirname "$BASH_FUNCTIONS_ABS_SRC")"
 
 ################################################################################
 # shorthand-functions
