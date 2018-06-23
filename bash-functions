@@ -2,90 +2,70 @@
 # Copyright (c) 2018 Herbert Shen <ishbguy@hotmail.com> All Rights Reserved.
 # Released under the terms of the MIT License.
 
-declare -r BASH_FUNCTIONS_ABS_SRC="$(realpath "${BASH_SOURCE[0]}")"
-declare -r BASH_FUNCTIONS_ABS_DIR="$(dirname "$BASH_FUNCTIONS_ABS_SRC")"
+declare -gr BASH_FUNCTIONS_ABS_SRC="$(realpath "${BASH_SOURCE[0]}")"
+declare -gr BASH_FUNCTIONS_ABS_DIR="$(dirname "$BASH_FUNCTIONS_ABS_SRC")"
 
-# This function is used to update the current dir's git softwares.
-gppull()
-{(
-    CURDIR=$(pwd)
-    for dname in `ls .|grep -vEe '(mylib|glibc)'`; do
-        cd $dname && git pull 
-        cd $CURDIR
+################################################################################
+# shorthand-functions
+################################################################################
+
+#Rewrite the cd cmd which can show me the oldpwd->pwd info
+cd() {
+    builtin cd "$@"
+    local es=$?
+    [[ $es -eq 0 ]] && echo "$OLDPWD -> $PWD" >&2
+    return $es
+}
+
+weather() { curl "http://wttr.in/$1"; }
+github() { git clone "https://github.com/$1"; }
+lydump() { lynx -dump -display_charset="${2:-utf-8}" "$1"; }
+
+# function for ruby jekyll blog server to up and down
+jekill() { pkill -f jekyll; }
+jekyup() {(jekill; cd "${1:-$BLOG_DIR}" && jekyll serve -B)}
+
+# Some functions for tmux
+tma() { tmux attach-session "$1"; }
+tmd() {
+    tmux new-session -s "${1:Dev}" -n "${2:-Coding}" \
+        -c ~/exer -d \; split-window -c ~/doc -h -d \; attach
+}
+tmm() {
+    tmux new-session -s "${1:-Com}" -n "${2:-Mutt}" \
+        -c ~/.mutt/attach/ -d 'mutt' \; \
+        new-window -n Offlineimap -c ~/.mail/hotmail 'offlineimap' \; attach
+}
+
+#Man(): Read the manual by vim
+Man() {
+    [[ $# -gt 2 || $# -eq 0 ]] && { echo "Man [1-8] page"; return 1; }
+    export ManFromShell=1
+    vim -c "Man $*" -c "bw 1|set tabstop=8|retab"
+    local rv=$?
+    unset ManFromShell
+    return $rv
+}
+
+pip_upgrade() {
+    for pkg in $(pip list --outdate --format legacy | awk '{print $1}'); do
+        sudo pip install --upgrade "${pkg}"
     done
-)}
-
-# This function use git clone from github.com
-github()
-{(
-    PRO="$@"
-    git clone https://github.com/$PRO
-    return $?
-)}
+}
 
 #This function is used to backup
-backup()
-{(
-    if [[ $# -lt 2 ]]; then
-        echo "Useage: backup backup-name backup-directory"
-        return 1
-    fi
-    BFILE=$1
-    shift 
-    BDIR=$@
+backup() {
+    [[ $# -lt 2 ]] && { echo "backup bk-name bk-paths"; return 1; }
+    local bk=$1; shift 
+    tar jcvf "${BACKUP_DIR:-/samba}/${bk}-$(date +%Y%m%d).tar.bz2" "$@"
+}
 
-    tar jcvf /samba/backup/${BFILE}-$(date +%Y%m%d).tar.bz2 ${BDIR}
-
-    return $?
-)}
-# Some functions for tmux
-tma()
-{(
-    if [[ $# -gt 1 ]]; then
-        echo "Too more arguments."
-        echo "Usage: tma [session-name]"
-        return 1
-    fi
-    [[ $# -eq 1 ]] && SENAME="-t $1"
-
-    tmux attach-session $SENAME
-
-    return $?
-)}
-
-tmd()
-{(
-    if [[ $# -gt 2 ]]; then
-        echo "Too more arguments."
-        echo "Usage: tmd [window-name] [session-name]"
-        return 1
-    fi
-
-    WINNAME=${1:-Coding}
-    SESNAME=${2:-Dev}
-    tmux new-session -s ${SESNAME} -n ${WINNAME} -c ~/exer -d \; split-window -c ~/doc -h -d \; attach
-
-    return $?
-)}
-tmm()
-{(
-    if [[ $# -gt 2 ]]; then
-        echo "Too more arguments."
-        echo "Usage: tmm [window-name] [session-name]"
-        return 1
-    fi
-
-    WINNAME=${1:-Mutt}
-    SESNAME=${2:-Com}
-    tmux new-session -s ${SESNAME} -n ${WINNAME} -c ~/.mutt/attach/ -d 'mutt' \; \
-        new-window -n Offlineimap -c ~/.mail/hotmail 'offlineimap' \; attach
-
-    return $?
-)}
+################################################################################
+# utility-functions
+################################################################################
 
 # A function quickly markdown something.
-mark()
-{(
+mark() {(
     HELP="
     Usage: mark [opt] [date]\n
     -d  date        Open or create a specified date mark file.\n
@@ -159,8 +139,7 @@ post()
 )}
 
 # tagit: tag a file.
-tagit()
-{(
+tagit() {(
     HELP="
     Usage: tagit [opt] [file]\n
     -a  tagname     Add a tag class.\n
@@ -255,133 +234,8 @@ tagit()
     fi
 )}
 
-# Convert the file from cp936 to utf-8.
-convfile()
-{(
-    if [[ $# -ne 1 ]]; then
-        echo "Usage: $0 file"
-        return 1
-    fi
-
-    #Convert encodings and subsititue the \n to none.
-    iconv -s -f cp936 -t utf-8 $1 -o $1-tmp && \
-        sed -ri 's/    //g' $1-tmp && \
-        rm -rf $1 && \
-        mv $1-tmp $1
-
-    return $?
-)}
-
-# Use the vim to convert the file encoding and format.
-vconv()
-{(
-    CUR=`pwd`
-    SRCDIR=$1
-    SRC=`find ${SRCDIR:-$CUR} -type f -a \( -iregex .*\\.h$ -o -iregex .*\\.c$ -o -iregex .*\\.hpp$ -o -regex .*\\.cpp$ \)`
-
-    for NAME in $SRC; do
-        vim --noplugin -E -c "set fileencoding=utf-8|set fileformat=unix|wq" $NAME 1>/dev/null
-    done
-)}
-
-# maketags(): use ctags to generate the tags file
-maketag()
-{(
-    CUR=`pwd`
-    SRCDIR=$1
-    DESDIR=$2
-
-    #Get the src file list
-    find ${SRCDIR:-$CUR} -type f -a \( -iregex .*\\.h$ -o -iregex .*\\.c$ \) >/tmp/tmptags
-    #start to make tags
-    ctags -R --sort=no \
-        --c-kinds=+c+d+e+f+g-l+m+n+p+s+t+u+v+x \
-        --fields=+a-f+i+k-K+l-m+n-s+S+z+t \
-        --extra=+q-f \
-        --languages=c \
-        -L /tmp/tmptags \
-        -o ${DESDIR:-$CUR}/tags
-    rv=$?
-    rm -rf /tmp/tmptags
-    return $rv
-)}
-
-# maketags(): use ctags to generate the tags file
-maketags()
-{(
-    CUR=`pwd`
-    SRCDIR=$1
-    DESDIR=$2
-
-    #Get the src file list
-    find ${SRCDIR:-$CUR} -type f -a \( -iregex .*\\.cpp$ -o -iregex .*\\.h$ -o -iregex .*\\.c$ -o -iregex .*\\.hpp$ \) >/tmp/tmptags
-    #start to make tags
-    ctags -R --sort=no \
-        --c++-kinds=+c+d+e+f+g-l+m+n+p+s+t+u+v+x \
-        --fields=+a-f+i+k-K+l-m+n+s+S+z+t \
-        --extra=+q-f \
-        --languages=c++ \
-        -L /tmp/tmptags \
-        -o ${DESDIR:-$CUR}/tags
-    rv=$?
-    rm -rf /tmp/tmptags
-    return $rv
-)}
-
-#lydump():Use lynx to dump the website
-lydump()
-{(
-    SITE=$1
-    CHAR=$2
-
-    if [[ -z $SITE ]]; then
-        echo "You must specify a website link."
-        return 1
-    fi
-
-    lynx -dump -display_charset=${CHAR:-utf-8} $SITE
-
-    return $?
-)}
-
-#Man(): Read the manual by vim
-Man()
-{(
-    if [[ $# -gt 2 || $# -eq 0 ]]; then
-        echo "Man [1-8] page"
-        return 1
-    fi
-
-    MARG=$@
-    export ManFromShell=1
-    vim -c "Man $MARG" -c "bw 1|set tabstop=8|retab"
-    rv=$?
-    unset ManFromShell
-    return $rv
-)}
-
-#Vi(): vim MCU source files.
-Vi()
-{(
-        export VISDCC=1
-        vim "$@"
-        rv=$?
-        unset VISDCC
-        return $rv
-)}
-
-#Rewrite the cd cmd which can show me the oldpwd->pwd info
-cd()
-{
-    builtin cd "$@"
-    es=$?
-    [[ $es -eq 0 ]] && echo "$OLDPWD -> $PWD" >&2
-    return $es
-}
-
 #mysmbadd(): SMB user add.
-mysmbadd()
-{(
+mysmbadd() {(
     if [[ $# -ne 1 ]]; then
         echo "mysmbadd smbuser"
         return 1
@@ -399,8 +253,7 @@ mysmbadd()
 )}
 
 #mysmbdel(): Delete smb user.
-mysmbdel()
-{(
+mysmbdel() {(
     if [[ $# -ne 1 ]]; then
         echo "mysmbdel smbuser"
         return 1
@@ -414,29 +267,5 @@ mysmbdel()
 
     return 0
 )}
-
-# function for ruby jekyll blog server to up and down
-jekill()
-{
-    pkill -f jekyll
-}
-
-jekyup()
-{
-    jekill
-    (cd /samba/project/git/ishbguy.github.io && jekyll serve -B)
-}
-
-weather()
-{(
-    [[ $# -ne 1 ]] && { echo "weather city"; exit 1; }
-    curl http://wttr.in/"$1"
-)}
-
-pip_upgrade() {
-    for pkg in $(pip list --outdate --format legacy | awk '{print $1}'); do
-        sudo pip install --upgrade "${pkg}"
-    done
-}
 
 # vim:set ft=sh ts=4 sw=4:
