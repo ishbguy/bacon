@@ -5,13 +5,13 @@ export BASH_EXPORT_VARS_ABS_SRC="$(realpath "${BASH_SOURCE[0]}")"
 export BASH_EXPORT_VARS_ABS_DIR="$(dirname "$BASH_EXPORT_VARS_ABS_SRC")"
 
 export PS1='\
-    \[\033[01;34m\][\u\[\033[00m\]\
-    \[\033[01;32m\]@\h \A\[\033[00m\] \
-    \[\033[01;33m\]\j\[\033[00m\] \
-    \[\033[01;36m\]$(tmux list-sessions 2>/dev/null|grep -v ^no|wc -l)\[\033[00m\] \
-    \[\033[01;34m\]\W]\[\033[00m\]\
-    \[\033[01;35m\]$(git branch 2>/dev/null|grep "\*"|cut -d" " -f2)\[\033[00m\]\
-    \[\033[01;34m\]\$\[\033[00m\] '
+\[\033[01;34m\][\u\[\033[00m\]\
+\[\033[01;32m\]@\h \A\[\033[00m\] \
+\[\033[01;33m\]\j\[\033[00m\] \
+\[\033[01;36m\]$(tmux list-sessions 2>/dev/null|grep -v ^no|wc -l)\[\033[00m\] \
+\[\033[01;34m\]\W]\[\033[00m\]\
+\[\033[01;35m\]$(git branch 2>/dev/null|grep "\*"|cut -d" " -f2)\[\033[00m\]\
+\[\033[01;34m\]\$\[\033[00m\] '
 
 # Save the OLD_PATH
 if [[ -z $OLD_PATH ]]; then
@@ -20,7 +20,6 @@ fi
 
 # restore old PATH when re-source the .bashrc file to prevent append duplicated path
 export PATH=$OLD_PATH
-export PATH=$PATH:~/bin:/usr/lib/yp/:~/exer/shell:~/exer/TextMan/sed:~/exer/TextMan/awk:~/exer/python:~/exer/perl
 export PS4='+ $(basename ${0##+(-)}) line $LINENO: '
 
 # terminal color setting.
@@ -45,7 +44,7 @@ export HARNESS_PERL_SWITCHES=-MDevel::Cover
 
 # Ruby bin
 RUBY_BIN="~/.gem/ruby/2.5.0/bin"
-export PATH=$PATH:$RUBY_BIN# What to do
+export PATH=$PATH:$RUBY_BIN
 
 
 # vim:set ft=sh ts=4 sw=4:
