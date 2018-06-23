@@ -3,6 +3,7 @@
 
 export BASHRC_ABS_SRC="$(realpath "${BASH_SOURCE[0]}")"
 export BASHRC_ABS_DIR="$(dirname "$BASHRC_ABS_SRC")"
+export BASHRC_SUBCONFIGS_DIR="$BASHRC_ABS_DIR/configs"
 
 # Source global definitions
 [[ -f /etc/bashrc ]] && source /etc/bashrc
@@ -12,7 +13,9 @@ export BASHRC_ABS_DIR="$(dirname "$BASHRC_ABS_SRC")"
 [[ -f $BASHRC_ABS_DIR/bash-functions ]] && source "$BASHRC_ABS_DIR/bash-functions"
 [[ -f $BASHRC_ABS_DIR/bash-precmd ]] && source "$BASHRC_ABS_DIR/bash-precmd"
 
-#Setting the ls colors
-[[ -r $BASHRC_ABS_DIR/dircolors ]] && eval "$(dircolors "$BASHRC_ABS_DIR/dircolors")"
+# source sub configs
+for cfg in "$BASHRC_SUBCONFIGS_DIR"/*.sh; do
+    [[ -f $cfg ]] && source "$cfg"
+done
 
 # vim:set ft=sh ts=4 sw=4:
