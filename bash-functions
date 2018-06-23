@@ -1,3 +1,10 @@
+#! /usr/bin/env bash
+# Copyright (c) 2018 Herbert Shen <ishbguy@hotmail.com> All Rights Reserved.
+# Released under the terms of the MIT License.
+
+declare -r BASH_FUNCTIONS_ABS_SRC="$(realpath "${BASH_SOURCE[0]}")"
+declare -r BASH_FUNCTIONS_ABS_DIR="$(dirname "$BASH_FUNCTIONS_ABS_SRC")"
+
 # This function is used to update the current dir's git softwares.
 gppull()
 {(
@@ -88,7 +95,7 @@ mark()
     Year=`date +%Y`
     Month=`date +%m`
     Day=`date +%d`
-    
+
     [[ $# -gt 2 ]] && { echo -ne "Argument error.\n"; echo -ne $HELP; return 1; }
 
     #Atgument and parameter parsing
@@ -192,7 +199,7 @@ tagit()
     'TAG=`ls $TAG_HOME/*/$FILE_NAME` && TAG=`dirname $TAG` && basename -a $TAG'
     'NUM=(`ls $TAG_HOME/$TAG`) && echo $TAG ${#NUM[@]}'
     )
-    
+
     OPTIND=1
     while getopts "a:d:D:t:T:l:n:Lh" OPTION; do
         case $OPTION in
@@ -258,7 +265,7 @@ convfile()
 
     #Convert encodings and subsititue the \n to none.
     iconv -s -f cp936 -t utf-8 $1 -o $1-tmp && \
-        sed -ri 's///g' $1-tmp && \
+        sed -ri 's/    //g' $1-tmp && \
         rm -rf $1 && \
         mv $1-tmp $1
 
@@ -431,3 +438,5 @@ pip_upgrade() {
         sudo pip install --upgrade "${pkg}"
     done
 }
+
+# vim:set ft=sh ts=4 sw=4:
