@@ -6,21 +6,21 @@ export BASH_ALIAS_ABS_DIR="$(dirname "$BASH_ALIAS_ABS_SRC")"
 
 # User specific aliases and functions
 alias cp='cp -i'
-alias Date='date +%Y%m%d'
-alias df='df -Th'
-alias du='du -sh'
-alias grep='grep --color'
+alias mv='mv -i'
+alias rm='rm -i'
 alias la='ls --color=auto -A'
 alias ll='ls --color=auto -lhA'
 alias ls='ls --color=auto'
-alias mv='mv -i'
-alias pacman='pacman --color=auto'
-alias rm='rm -i'
-alias vi='vim'
+alias grep='grep --color'
 alias which='alias | /usr/bin/which --tty-only --read-alias --show-dot --show-tilde'
-alias indent='indent -st'
+alias pacman='pacman --color=auto'
+alias vi='vim'
+alias df='df -Th'
+alias du='du -sh'
 alias co='cd ~-'
+alias indent='indent -st'
 alias gdb='gdb -q'
+alias Date='date +%Y%m%d'
 
 #Alias for quick config.
 alias sb='source ~/.bashrc' 
@@ -47,7 +47,5 @@ alias Mutt='(cd ~/.mutt/attach/ && /usr/bin/mutt)'
 
 #alias for irssi
 alias irssi='TERM=xterm irssi'
-
-alias fullscreen='wmctrl -i -r $WINID -b toggle,fullscreen'
 
 # vim:set ft=sh ts=4 sw=4:
