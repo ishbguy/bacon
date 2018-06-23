@@ -20,7 +20,7 @@ alias tmxc='tmux capture-pane'
 # Some functions for tmux
 tma() { tmux attach-session "$1"; }
 tmd() {
-    tmux new-session -s "${1:Dev}" -n "${2:-Coding}" \
+    tmux new-session -s "${1:-Dev}" -n "${2:-Coding}" \
         -c ~/exer -d \; split-window -c ~/doc -h -d \; attach
 }
 
