@@ -18,7 +18,6 @@ cd() {
 }
 
 weather() { curl "http://wttr.in/$1"; }
-github() { git clone "https://github.com/$1"; }
 lydump() { lynx -dump -display_charset="${2:-utf-8}" "$1"; }
 
 # function for ruby jekyll blog server to up and down
