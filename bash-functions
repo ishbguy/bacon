@@ -25,18 +25,6 @@ lydump() { lynx -dump -display_charset="${2:-utf-8}" "$1"; }
 jekill() { pkill -f jekyll; }
 jekyup() {(jekill; cd "${1:-$BLOG_DIR}" && jekyll serve -B)}
 
-# Some functions for tmux
-tma() { tmux attach-session "$1"; }
-tmd() {
-    tmux new-session -s "${1:Dev}" -n "${2:-Coding}" \
-        -c ~/exer -d \; split-window -c ~/doc -h -d \; attach
-}
-tmm() {
-    tmux new-session -s "${1:-Com}" -n "${2:-Mutt}" \
-        -c ~/.mutt/attach/ -d 'mutt' \; \
-        new-window -n Offlineimap -c ~/.mail/hotmail 'offlineimap' \; attach
-}
-
 #Man(): Read the manual by vim
 Man() {
     [[ $# -gt 2 || $# -eq 0 ]] && { echo "Man [1-8] page"; return 1; }

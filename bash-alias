@@ -122,14 +122,6 @@ alias Mutt='(cd ~/.mutt/attach/ && /usr/bin/mutt)'
 #alias for irssi
 alias irssi='TERM=xterm irssi'
 
-#alias for tmux
-alias tmx='tmux'
-alias tmxn='tmux new-session'
-alias tmxl='tmux list-sessions'
-alias tmxa='tmux attach-session'
-alias tmxk='tmux kill-session'
-alias tmxc='tmux capture-pane'
-
 alias fullscreen='wmctrl -i -r $WINID -b toggle,fullscreen'
 
 # vim:set ft=sh ts=4 sw=4:
