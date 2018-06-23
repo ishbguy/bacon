@@ -1,8 +1,8 @@
 # Copyright (c) 2018 Herbert Shen <ishbguy@hotmail.com> All Rights Reserved.
 # Released under the terms of the MIT License.
 
-export BASHRC_ABS_DIR="$(dirname "$(realpath "${BASH_SOURCE[0]}")")"
-export BASHRC_PLUGINS_DIR="$BASHRC_ABS_DIR/plugins"
+export BASHRC_ABS_SRC="$(realpath "${BASH_SOURCE[0]}")"
+export BASHRC_ABS_DIR="$(dirname "$BASHRC_ABS_SRC")"
 
 [[ -f $BASHRC_ABS_DIR/bash-alias ]] && source "$BASHRC_ABS_DIR/bash-alias"
 [[ -f $BASHRC_ABS_DIR/bash-export-vars ]] && source "$BASHRC_ABS_DIR/bash-export-vars"
