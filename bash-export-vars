@@ -1,0 +1,50 @@
+# Copyright (c) 2018 Herbert Shen <ishbguy@hotmail.com> All Rights Reserved.
+# Released under the terms of the MIT License.
+
+export BASH_EXPORT_VARS_ABS_DIR="$(dirname "$(realpath "${BASH_SOURCE[0]}")")"
+
+export PS1='\
+    \[\033[01;34m\][\u\[\033[00m\]\
+    \[\033[01;32m\]@\h \A\[\033[00m\] \
+    \[\033[01;33m\]\j\[\033[00m\] \
+    \[\033[01;36m\]$(tmux list-sessions 2>/dev/null|grep -v ^no|wc -l)\[\033[00m\] \
+    \[\033[01;34m\]\W]\[\033[00m\]\
+    \[\033[01;35m\]$(git branch 2>/dev/null|grep "\*"|cut -d" " -f2)\[\033[00m\]\
+    \[\033[01;34m\]\$\[\033[00m\] '
+
+# Save the OLD_PATH
+if [[ -z $OLD_PATH ]]; then
+    export OLD_PATH=$PATH
+fi
+
+# restore old PATH when re-source the .bashrc file to prevent append duplicated path
+export PATH=$OLD_PATH
+export PATH=$PATH:~/bin:/usr/lib/yp/:~/exer/shell:~/exer/TextMan/sed:~/exer/TextMan/awk:~/exer/python:~/exer/perl
+export PS4='+ $(basename ${0##+(-)}) line $LINENO: '
+
+# terminal color setting.
+export TERM=xterm-256color
+export EDITOR=vim
+export LYNX_CFG=~/.lynx.cfg
+export CFLOWRC=/samba/project/git/cflow/src/cflow.rc
+export MARK_DIR=~/doc/mark
+export TAG_DIR=~/doc/tag
+export BLOG_DIR=/samba/project/git/ishbguy.github.io
+export POST_DIR=$BLOG_DIR/_posts
+
+# get x window id
+[[ -z $WINID && -n $DISPLAY ]] && export WINID=$(wmctrl -l | tail -n1 | awk '{print $1}')
+
+PATH="/home/ishbguy/perl5/bin${PATH:+:${PATH}}"; export PATH;
+PERL5LIB="/home/ishbguy/perl5/lib/perl5${PERL5LIB:+:${PERL5LIB}}"; export PERL5LIB;
+PERL_LOCAL_LIB_ROOT="/home/ishbguy/perl5${PERL_LOCAL_LIB_ROOT:+:${PERL_LOCAL_LIB_ROOT}}"; export PERL_LOCAL_LIB_ROOT;
+PERL_MB_OPT="--install_base \"/home/ishbguy/perl5\""; export PERL_MB_OPT;
+PERL_MM_OPT="INSTALL_BASE=/home/ishbguy/perl5"; export PERL_MM_OPT;
+export HARNESS_PERL_SWITCHES=-MDevel::Cover
+
+# Ruby bin
+RUBY_BIN="~/.gem/ruby/2.5.0/bin"
+export PATH=$PATH:$RUBY_BIN# What to do
+
+
+# vim:set ft=sh ts=4 sw=4:

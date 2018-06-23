@@ -1,0 +1,144 @@
+# Copyright (c) 2018 Herbert Shen <ishbguy@hotmail.com> All Rights Reserved.
+# Released under the terms of the MIT License.
+
+export BASH_ALIAS_ABS_DIR="$(dirname "$(realpath "${BASH_SOURCE[0]}")")"
+
+# User specific aliases and functions
+alias cp='cp -i'
+alias Date='date +%Y%m%d'
+alias df='df -Th'
+alias du='du -sh'
+alias grep='grep --color'
+alias la='ls --color=auto -A'
+alias ll='ls --color=auto -lhA'
+alias ls='ls --color=auto'
+alias mv='mv -i'
+alias pacman='pacman --color=auto'
+alias rm='rm -i'
+alias vi='vim'
+alias which='alias | /usr/bin/which --tty-only --read-alias --show-dot --show-tilde'
+alias indent='indent -st'
+alias co='cd ~-'
+alias gdb='gdb -q'
+
+#Alias for quick config.
+alias sb='source ~/.bashrc' 
+alias vb='vi ~/.bashrc'
+alias vf='vi ~/exer/lib/lib.bash'
+alias vF='vi ~/exer/lib/lib.sh'
+alias vl='vi ~/.vim/lib/mylib.vim'
+alias vp='vi /home/ishbguy/.vim/data/indexer_files'
+alias vs='vi ~/.vim/snippet/c.snippets'
+alias vv='vi ~/.vim/vimrc'
+alias vt='vi ~/.tmux.conf'
+alias vT='vi ~/.taskrc'
+
+#Alias for job control.
+alias job='jobs -l'
+alias po='popd'
+alias pp='pushd +1'
+alias pu='pushd'
+
+#alias for systemd
+alias scdis='systemctl disable'
+alias scen='systemctl enable'
+alias shut-1='ssh test1 poweroff'
+alias shut-2='ssh test2 poweroff'
+alias ssact='systemctl -l list-units'
+alias ssdis='systemctl --state disabled list-unit-files'
+alias ssen='systemctl --state enabled list-unit-files'
+alias suen='systemctl --user --state enabled list-unit-files'
+
+#alias for git
+alias gadd='git add'
+alias gbranch='git branch'
+alias gcheckout='git checkout'
+alias gclone='git clone'
+alias gcommit='git commit'
+alias gconfig='git config'
+alias gdiff='git diff'
+alias gfetch='git fetch'
+alias ggrep='git grep'
+alias ghelp='git help'
+alias ginit='git init'
+alias glog='git log --graph --color --decorate -M --pretty=medium'
+alias gmerge='git merge'
+alias gpull='git pull'
+alias gshow='git show'
+alias gstatus='git status'
+alias gtag='git tag'
+
+alias git_set_head_to='git reset --soft'
+alias git_set_headindex_to='git reset --mixed'
+alias git_set_all_to='git reset --hard'
+alias git_set_index_eq_to='git reset --merge'
+alias git_clean_index='git reset --keep'
+
+alias git_undo_commit='git reset --soft HEAD^'
+alias git_redo_commit='git commit -a -c ORIG_HEAD'
+alias git_fix_commit='git commit -a --amend'
+alias git_rollback_soft='git checkout'
+alias git_rollback_hard='git reset --hard'
+alias git_undo_index_file='git reset --'
+alias git_undo_index_all='git reset'
+alias git_undo_changed_file='git checkout --'
+alias git_merge_modified='git pull && git reset --merge ORIG_HEAD'
+alias git_merge_work='git pull && git reset --merge ORIG_HEAD'
+
+#alias for task
+#task report alias
+alias taskP='task all status:pending'
+alias taskC='task all status:completed'
+alias taskD='task all status:deleted'
+alias taskW='task all status:waiting'
+alias taskR='task all status:recurring'
+alias taskBd='task burndown.daily'
+alias taskBw='task burndown.weekly'
+alias taskBm='task burndown.monthly'
+alias taskA='task active'
+alias taskO='task overdue'
+alias taskS='task summary'
+alias taskT='task timesheet'
+alias taskM='task minimal'
+alias taskd='task all +TODAY status.not:recurring'
+alias taskt='task all +TOMORROW status.not:recurring'
+alias taskw='task all +WEEK status.not:recurring'
+alias taskm='task all +MONTH status.not:recurring'
+alias taskc='task calendar'
+alias taskl='task list'
+
+alias task-push='rclone sync ~/.task onedrive:task'
+alias task-pull='rclone sync onedrive:task ~/.task'
+
+#task minimal
+
+#alias for gpg
+#alias gpg='gpg --options ~/.gnupg/dirmngr.conf'
+
+#alias for mutt
+alias Mutt='(cd ~/.mutt/attach/ && /usr/bin/mutt)'
+
+#alias for irssi
+alias irssi='TERM=xterm irssi'
+
+#alias for tmux
+alias tmx='tmux'
+alias tmxn='tmux new-session'
+alias tmxl='tmux list-sessions'
+alias tmxa='tmux attach-session'
+alias tmxk='tmux kill-session'
+alias tmxc='tmux capture-pane'
+
+# alias for stardict sdcv
+alias dict-oxford='sdcv -c -u oxford'
+alias dict-king='sdcv -c -u kingsoft-ce'
+alias dict-ldec='sdcv -c -u langdao-ec'
+alias dict-ldce='sdcv -c -u langdao-ce'
+alias dict-ec='sdcv -c -u lazyworm-ec'
+alias dict-ce='sdcv -c -u lazyworm-ce'
+alias dict-cb='sdcv -c -u stardict-cb'
+alias dict='sdcv -c -u stardict-cb'
+
+alias fullscreen='wmctrl -i -r $WINID -b toggle,fullscreen'
+
+# vim:set ft=sh ts=4 sw=4:
