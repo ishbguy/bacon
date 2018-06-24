@@ -13,6 +13,7 @@ install() {
     local date=$(date +%Y%m%d)
     for cfg in "${configs[@]}"; do
         [[ -f $HOME/.$cfg ]] && mv "$HOME/.$cfg" "$HOME/.$cfg-$date"
+        printf 'link %-15s to %s\n' "$cfg" "$HOME/.$cfg"
         ln -s "$INSTALL_ABS_DIR/$cfg" "$HOME/.$cfg"
     done
 }
