@@ -17,14 +17,31 @@ if [[ ! -f $BAG_REPO_DIR/bag.sh ]]; then
         && git clone https://github.com/ishbguy/bag "$BAG_REPO_DIR"
 fi
 
-if [[ -f $BAG_REPO_DIR/bag.sh ]]; then
-    source "$BAG_REPO_DIR/bag.sh"
-    [[ -d $BAGS_DIR ]] || mkdir -p "$BAGS_DIR"
-    bag base "$BAGS_DIR"
-    bag plug "gh:ishbguy/baux"
-    bag plug "gh:ishbguy/license"
-    bag plug "gh:ishbguy/vim-config"
-    bag load
+[[ -f $BAG_REPO_DIR/bag.sh ]] \
+    || { printf 'Failed to download %s\n' '/ishbguy/bag'; return 1; }
+
+source "$BAG_REPO_DIR/bag.sh"
+
+# add rclone downloader
+if hash rclone &>/dev/null; then
+    bag_downloader_rclone() {
+        local bag_url="${1#*:}"
+        local bag_name=$(basename "$bag_url")
+        local base_dir="$2"
+
+        printf 'rclone sync %s %s' "$bag_url" "$base_dir/$bag_name\n"
+        rclone sync "$bag_url" "$base_dir/$bag_name" &>/dev/null
+    }
+    BAG_DOWNLOADER[rclone]=bag_downloader_rclone
+    BAG_DOWNLOADER[rc]=bag_downloader_rclone
 fi
+
+[[ -d $BAGS_DIR ]] || mkdir -p "$BAGS_DIR"
+
+bag base "$BAGS_DIR"
+bag plug "gh:ishbguy/baux"
+bag plug "gh:ishbguy/license"
+bag plug "gh:ishbguy/vim-config"
+bag load
 
 # vim:set ft=sh ts=4 sw=4:
