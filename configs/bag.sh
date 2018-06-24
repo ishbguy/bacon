@@ -25,12 +25,16 @@ source "$BAG_REPO_DIR/bag.sh"
 # add rclone downloader
 if hash rclone &>/dev/null; then
     bag_downloader_rclone() {
-        local bag_url="${1#*:}"
-        local bag_name=$(basename "$bag_url")
-        local base_dir="$2"
+        [[ $# -eq 2 ]] || __bag_warn "Not enough args." || return 1
+        local bag_opt="$1"
+        local bag_url="${2#*:}"
+        local bag_name=$(basename "${bag_url##*:}")
 
-        printf 'rclone sync %s %s' "$bag_url" "$base_dir/$bag_name\n"
-        rclone sync "$bag_url" "$base_dir/$bag_name" &>/dev/null
+        case $bag_opt in
+            install) rclone sync "$bag_url" "$BAG_BASE_DIR/$bag_name" ;;
+            update) rclone sync "$bag_url" "$BAG_BASE_DIR/$bag_name" ;;
+            *) __bag_warn "No such option: $bag_opt" ;;
+        esac
     }
     BAG_DOWNLOADER[rclone]=bag_downloader_rclone
     BAG_DOWNLOADER[rc]=bag_downloader_rclone
