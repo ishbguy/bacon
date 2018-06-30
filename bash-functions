@@ -51,6 +51,9 @@ backup() {
 # utility-functions
 ################################################################################
 
+defined() { declare -p "$1" &>/dev/null; }
+defined_func() { declare -f "$1" &>/dev/null; }
+
 # A function quickly markdown something.
 mark() {(
     HELP="
