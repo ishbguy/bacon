@@ -9,7 +9,7 @@ declare -ga BASH_PRECMDS
 
 bash_precmd() {
     for cmd in "${BASH_PRECMDS[@]}"; do
-        "$cmd"
+        eval "$cmd"
     done
 }
 
