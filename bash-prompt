@@ -28,7 +28,7 @@ bash_prompt_last_status() {
     bash_prompt_color "$color" "&"
 }
 bash_prompt_time() {
-    bash_prompt_color "${BASH_PROMPT_COLOR[time]:-white}" '[\A]'
+    bash_prompt_color "${BASH_PROMPT_COLOR[time]:-green}" '[\A]'
 }
 bash_prompt_location() {
     bash_prompt_color "${BASH_PROMPT_COLOR[location]:-blue}" '[\u@\h:\W]'
