@@ -12,10 +12,13 @@ export BASHRC_SUBCONFIGS_DIR="$BASHRC_ABS_DIR/configs"
 [[ -f $BASHRC_ABS_DIR/bash-export-vars ]] && source "$BASHRC_ABS_DIR/bash-export-vars"
 [[ -f $BASHRC_ABS_DIR/bash-functions ]] && source "$BASHRC_ABS_DIR/bash-functions"
 [[ -f $BASHRC_ABS_DIR/bash-precmd ]] && source "$BASHRC_ABS_DIR/bash-precmd"
+[[ -f $BASHRC_ABS_DIR/bash-prompt ]] && source "$BASHRC_ABS_DIR/bash-prompt"
 
 # source sub configs
 for cfg in "$BASHRC_SUBCONFIGS_DIR"/*.sh; do
     [[ -f $cfg ]] && source "$cfg"
 done
+
+return 0
 
 # vim:set ft=sh ts=4 sw=4:

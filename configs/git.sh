@@ -45,4 +45,20 @@ alias git_merge_work='git pull && git reset --merge ORIG_HEAD'
 
 github() { git clone "https://github.com/$1"; }
 
+if defined BASH_PROMPT_PS1_LAYOUT && defined_func bash_prompt_color; then
+    bash_prompt_git_branch() {
+        local branch="$(git branch 2>/dev/null | grep '\*' | awk '{print $2}')"
+        local status_string="$(git status -s 2>/dev/null | awk '{print $1}' \
+            | sort | uniq -c | awk '{print $2$1}')"
+        local -a status
+        [[ -n $status_string ]] && mapfile -t status <<<"$status_string"
+        for s in "${status[@]}"; do
+            branch+=":$s"
+        done
+        [[ -n $branch ]] \
+            && bash_prompt_color "${BASH_PROMPT_COLOR[git]:-magenta}" "[$branch]"
+    }
+    BASH_PROMPT_PS1_LAYOUT+=(bash_prompt_git_branch)
+fi
+
 # vim:set ft=sh ts=4 sw=4:
