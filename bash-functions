@@ -108,8 +108,9 @@ color_echo() {
         has_map BASH_ANSI_COLOR "$1" && { format="$1"; shift; }
     fi
     set_color "$color" "$format"
-    echo -e "$@"
+    echo -ne "$@"
     set_color reset
+    echo
 }
 
 msg() { color_echo yellow "$@" >&2; }
