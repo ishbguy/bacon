@@ -61,7 +61,7 @@ if defined BASH_PROMPT_PS1_LAYOUT && defined_func bash_prompt_color; then
             branch+=":$s"
         done
         [[ -n $branch ]] \
-            && bash_prompt_color "${BASH_PROMPT_COLOR[git]:-magenta}" "[$branch]"
+            && bash_prompt_color ${BASH_PROMPT_COLOR[git]:-magenta} "[$branch]"
     }
     BASH_PROMPT_PS1_LAYOUT+=(bash_prompt_git_branch)
 fi

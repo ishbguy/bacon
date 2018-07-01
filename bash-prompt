@@ -25,13 +25,13 @@ bash_prompt_color() {
 bash_prompt_last_status() {
     local color="${BASH_PROMPT_COLOR[last_fail]:-red}"
     [[ $LAST_STATUS -eq 0 ]] && color="${BASH_PROMPT_COLOR[last_ok]:-green}"
-    bash_prompt_color "$color" "&"
+    bash_prompt_color $color "&"
 }
 bash_prompt_time() {
-    bash_prompt_color "${BASH_PROMPT_COLOR[time]:-green}" '[\A]'
+    bash_prompt_color ${BASH_PROMPT_COLOR[time]:-green} '[\A]'
 }
 bash_prompt_location() {
-    bash_prompt_color "${BASH_PROMPT_COLOR[location]:-blue}" '[\u@\h:\W]'
+    bash_prompt_color ${BASH_PROMPT_COLOR[location]:-blue} '[\u@\h:\W]'
 }
 BASH_PROMPT_COUNTERS+=('jobs | wc -l')
 bash_prompt_counter() {
@@ -41,9 +41,9 @@ bash_prompt_counter() {
         [[ $nr != 0 ]] && counters+=("$(eval "$cnt")")
     done
     [[ ${#counters[@]} -ne 0 ]] \
-        && bash_prompt_color "${BASH_PROMPT_COLOR[counter]:-yellow}" "[${counters[*]}]"
+        && bash_prompt_color ${BASH_PROMPT_COLOR[counter]:-yellow} "[${counters[*]}]"
 }
-bash_prompt_dollar() { bash_prompt_color "${BASH_PROMPT_COLOR[dollar]:-blue}" '\$ '; }
+bash_prompt_dollar() { bash_prompt_color ${BASH_PROMPT_COLOR[dollar]:-blue} '\$ '; }
 BASH_PROMPT_PS1_LAYOUT=(
     bash_prompt_last_status
     bash_prompt_time
