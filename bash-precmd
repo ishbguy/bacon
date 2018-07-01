@@ -5,8 +5,7 @@
 export BASH_PRECMD_ABS_SRC="$(realpath "${BASH_SOURCE[0]}")"
 export BASH_PRECMD_ABS_DIR="$(dirname "$BASH_PRECMD_ABS_SRC")"
 
-declare -ga BASH_PRECMDS
-
+declare -ga BASH_PRECMDS=('export LAST_STATUS=$?')
 bash_precmd() {
     for cmd in "${BASH_PRECMDS[@]}"; do
         eval "$cmd"
