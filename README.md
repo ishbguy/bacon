@@ -19,7 +19,9 @@ This is my daily used bash configuration.
 ## :art: Features
 
 + Modular: aliases, variables, functions, etc.
-+ Support pre-command functions.
++ Easy to add pre-command functions.
++ Easy to add customized configuration files.
++ Colorful, configurable and pragmatic PS1 prompt.
 + Use [`bag`](https://github.com/ishbguy/bag) to manage package or plugin.
 
 ## :straight_ruler: Prerequisite
