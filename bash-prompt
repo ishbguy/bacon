@@ -35,13 +35,20 @@ bash_prompt_location() {
 }
 BASH_PROMPT_COUNTERS+=('jobs | wc -l')
 bash_prompt_counter() {
-    local -a counters
+    local -A counters
+    local str=''
     for cnt in "${BASH_PROMPT_COUNTERS[@]}"; do
         local nr="$(eval "$cnt")"
-        [[ $nr != 0 ]] && counters+=("$(eval "$cnt")")
+        [[ $nr =~ ^[[:digit:]]+$ && $nr != 0 ]] || continue
+        cnt="${cnt// /}"
+        for ((len = 1; len <= ${#cnt}; len++)); do
+            [[ -z ${counters[${cnt:0:$len}]} ]] || continue
+            str+="${cnt:0:$len}$nr"
+            counters[${cnt:0:$len}]="$nr"
+            break
+        done
     done
-    [[ ${#counters[@]} -ne 0 ]] \
-        && bash_prompt_color ${BASH_PROMPT_COLOR[counter]:-yellow} "[${counters[*]}]"
+    [[ -n $str ]] && bash_prompt_color ${BASH_PROMPT_COLOR[counter]:-yellow} "[$str]"
 }
 bash_prompt_dollar() { bash_prompt_color ${BASH_PROMPT_COLOR[dollar]:-blue} '\$ '; }
 BASH_PROMPT_PS1_LAYOUT=(
