@@ -36,8 +36,8 @@ bash_prompt_location() {
     bash_prompt_color ${BASH_PROMPT_COLOR[location]:-blue} \
         "${BASH_PROMPT_CHARS[location]:-[\u@\h:\W]}"
 }
-BASH_PROMPT_COUNTERS+=('jobs | wc -l')
 BASH_PROMPT_COUNTERS+=('dirs -p | tail -n +2 | wc -l')
+BASH_PROMPT_COUNTERS+=('jobs -p | wc -l')
 bash_prompt_counter() {
     local -A counters
     local str=''
