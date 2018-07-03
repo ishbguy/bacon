@@ -4,43 +4,30 @@
 export BASH_EXPORT_VARS_ABS_SRC="$(realpath "${BASH_SOURCE[0]}")"
 export BASH_EXPORT_VARS_ABS_DIR="$(dirname "$BASH_EXPORT_VARS_ABS_SRC")"
 
-export PS1='\
-\[\033[01;34m\][\u\[\033[00m\]\
-\[\033[01;32m\]@\h \A\[\033[00m\] \
-\[\033[01;33m\]\j\[\033[00m\] \
-\[\033[01;36m\]$(tmux list-sessions 2>/dev/null|grep -v ^no|wc -l)\[\033[00m\] \
-\[\033[01;34m\]\W]\[\033[00m\]\
-\[\033[01;35m\]$(git branch 2>/dev/null|grep "\*"|cut -d" " -f2)\[\033[00m\]\
-\[\033[01;34m\]\$\[\033[00m\] '
-
-# Save the OLD_PATH
-if [[ -z $OLD_PATH ]]; then
-    export OLD_PATH=$PATH
-fi
-
 # restore old PATH when re-source the .bashrc file to prevent append duplicated path
+[[ -z $OLD_PATH ]] && export OLD_PATH=$PATH
 export PATH=$OLD_PATH
-export PS4='+ $(basename ${0##+(-)}) line $LINENO: '
 
 # terminal color setting.
 export TERM=xterm-256color
 export EDITOR=vim
-export LYNX_CFG=~/.lynx.cfg
-export CFLOWRC=/samba/project/git/cflow/src/cflow.rc
-export MARK_DIR=~/doc/mark
-export TAG_DIR=~/doc/tag
-export BLOG_DIR=/samba/project/git/ishbguy.github.io
+export LYNX_CFG=$HOME/.lynx.cfg
+export MARK_DIR=$HOME/doc/mark
+export TAG_DIR=$HOME/doc/tag
+export GIT_PROJECT_DIR=/samba/project/git
+export CFLOWRC=${GIT_PROJECT_DIR}/cflow/src/cflow.rc
+export BLOG_DIR=${GIT_PROJECT_DIR}/ishbguy.github.io
 export POST_DIR=$BLOG_DIR/_posts
 
-PATH="/home/ishbguy/perl5/bin${PATH:+:${PATH}}"; export PATH;
-PERL5LIB="/home/ishbguy/perl5/lib/perl5${PERL5LIB:+:${PERL5LIB}}"; export PERL5LIB;
-PERL_LOCAL_LIB_ROOT="/home/ishbguy/perl5${PERL_LOCAL_LIB_ROOT:+:${PERL_LOCAL_LIB_ROOT}}"; export PERL_LOCAL_LIB_ROOT;
-PERL_MB_OPT="--install_base \"/home/ishbguy/perl5\""; export PERL_MB_OPT;
-PERL_MM_OPT="INSTALL_BASE=/home/ishbguy/perl5"; export PERL_MM_OPT;
+export PATH="$HOME/perl5/bin${PATH:+:${PATH}}"
+export PERL5LIB="$HOME/perl5/lib/perl5${PERL5LIB:+:${PERL5LIB}}"
+export PERL_LOCAL_LIB_ROOT="$HOME/perl5${PERL_LOCAL_LIB_ROOT:+:${PERL_LOCAL_LIB_ROOT}}"
+export PERL_MB_OPT="--install_base \"$HOME/perl5\""
+export PERL_MM_OPT="INSTALL_BASE=$HOME/perl5"
 export HARNESS_PERL_SWITCHES=-MDevel::Cover
 
 # Ruby bin
-RUBY_BIN="~/.gem/ruby/2.5.0/bin"
+export RUBY_BIN="$HOME/.gem/ruby/2.5.0/bin"
 export PATH=$PATH:$RUBY_BIN
 
 
