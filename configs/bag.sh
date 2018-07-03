@@ -5,11 +5,10 @@
 hash git &>/dev/null || return 1
 
 export BASH_CONFIG_BAG_SRC="$(realpath "${BASH_SOURCE[0]}")"
-export BASH_CONFIG_BAG_DIR="$(dirname "$BASH_LS_CONFIG_SRC")"
+export BASH_CONFIG_BAG_DIR="$(dirname "$BASH_CONFIG_BAG_SRC")"
 
-export PROJECTS_DIR=/samba/project
-export GIT_PROJECTS_DIR="$PROJECTS_DIR/git"
-export BAG_REPO_DIR="$GIT_PROJECTS_DIR/bag"
+export PROJECTS_DIR="$(realpath "$BASH_CONFIG_BAG_DIR/../..")"
+export BAG_REPO_DIR="$PROJECTS_DIR/bag"
 export BAGS_DIR="$PROJECTS_DIR/bags"
 
 if [[ ! -f $BAG_REPO_DIR/bag.sh ]]; then
