@@ -13,39 +13,19 @@ alias ll='ls --color=auto -lhA'
 alias ls='ls --color=auto'
 alias grep='grep --color'
 alias which='alias | /usr/bin/which --tty-only --read-alias --show-dot --show-tilde'
-alias pacman='pacman --color=auto'
 alias vi='vim'
 alias df='df -Th'
 alias du='du -sh'
 alias co='cd ~-'
-alias indent='indent -st'
-alias gdb='gdb -q'
-alias Date='date +%Y%m%d'
 
 #Alias for quick config.
 alias sb='source ~/.bashrc' 
 alias vb='vi ~/.bashrc'
-alias vf='vi ~/exer/lib/lib.bash'
-alias vF='vi ~/exer/lib/lib.sh'
-alias vl='vi ~/.vim/lib/mylib.vim'
-alias vp='vi /home/ishbguy/.vim/data/indexer_files'
-alias vs='vi ~/.vim/snippet/c.snippets'
-alias vv='vi ~/.vim/vimrc'
-alias vt='vi ~/.tmux.conf'
 
 #Alias for job control.
 alias job='jobs -l'
 alias po='popd'
 alias pp='pushd +1'
 alias pu='pushd'
-
-#alias for gpg
-#alias gpg='gpg --options ~/.gnupg/dirmngr.conf'
-
-#alias for mutt
-alias Mutt='(cd ~/.mutt/attach/ && /usr/bin/mutt)'
-
-#alias for irssi
-alias irssi='TERM=xterm irssi'
 
 # vim:set ft=sh ts=4 sw=4:
