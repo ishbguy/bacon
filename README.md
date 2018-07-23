@@ -7,7 +7,7 @@
 
 This is my daily used bash configuration.
 
-![bash-config-example](https://github.com/ishbguy/bash-config/blob/master/images/bash-config-example.png)
+![bash-config-example](https://github.com/ishbguy/bash-config/blob/master/screenshots/bash-config-example.png)
 
 ## Table of Contents
 
