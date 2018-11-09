@@ -9,7 +9,6 @@ export BASHRC_SUBCONFIGS_DIR="$BASHRC_ABS_DIR/configs"
 [[ -f /etc/bashrc ]] && source /etc/bashrc
 
 [[ -f $BASHRC_ABS_DIR/bash-alias ]] && source "$BASHRC_ABS_DIR/bash-alias"
-[[ -f $BASHRC_ABS_DIR/bash-export-vars ]] && source "$BASHRC_ABS_DIR/bash-export-vars"
 [[ -f $BASHRC_ABS_DIR/bash-functions ]] && source "$BASHRC_ABS_DIR/bash-functions"
 [[ -f $BASHRC_ABS_DIR/bash-precmd ]] && source "$BASHRC_ABS_DIR/bash-precmd"
 [[ -f $BASHRC_ABS_DIR/bash-prompt ]] && source "$BASHRC_ABS_DIR/bash-prompt"

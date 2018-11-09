@@ -7,6 +7,8 @@ hash perl &>/dev/null || return 1
 export BASH_CONFIG_PERL_SRC="$(realpath "${BASH_SOURCE[0]}")"
 export BASH_CONFIG_PERL_DIR="$(dirname "$BASH_CONFIG_PERL_SRC")"
 
+export PATH="$HOME/perl5/bin${PATH:+:${PATH}}"
+
 export PERL5LIB="$HOME/perl5/lib/perl5${PERL5LIB:+:${PERL5LIB}}"
 export PERL_LOCAL_LIB_ROOT="$HOME/perl5${PERL_LOCAL_LIB_ROOT:+:${PERL_LOCAL_LIB_ROOT}}"
 export PERL_MB_OPT="--install_base \"$HOME/perl5\""
