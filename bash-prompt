@@ -67,7 +67,7 @@ BASH_PROMPT_PS1_LAYOUT=(
 bash_prompt_PS1() {
     PS1=
     for layout in "${BASH_PROMPT_PS1_LAYOUT[@]}"; do
-        defined_func "$layout" && PS1+="$($layout)"
+        definedf "$layout" && PS1+="$($layout)"
     done
     PS1+="$(bash_prompt_dollar)"
     export PS1

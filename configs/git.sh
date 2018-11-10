@@ -45,7 +45,7 @@ alias git_merge_work='git pull && git reset --merge ORIG_HEAD'
 
 github() { git clone "https://github.com/$1"; }
 
-if defined BASH_PROMPT_PS1_LAYOUT && defined_func bash_prompt_color; then
+if defined BASH_PROMPT_PS1_LAYOUT && definedf bash_prompt_color; then
     bash_prompt_git_branch() {
         local branch="$(git symbolic-ref --short HEAD 2>/dev/null)"
         local cmp="$(git status 2>/dev/null | grep 'Your branch is' | awk '{print $4,$8}')"

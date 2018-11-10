@@ -2,8 +2,8 @@
 # Copyright (c) 2018 Herbert Shen <ishbguy@hotmail.com> All Rights Reserved.
 # Released under the terms of the MIT License.
 
-export BASH_FUNCTIONS_ABS_SRC="$(realpath "${BASH_SOURCE[0]}")"
-export BASH_FUNCTIONS_ABS_DIR="$(dirname "$BASH_FUNCTIONS_ABS_SRC")"
+export BASH_CONFIGS_FUNC_ABS_SRC="$(realpath "${BASH_SOURCE[0]}")"
+export BASH_CONFIGS_FUNC_ABS_DIR="$(dirname "$BASH_CONFIGS_FUNC_ABS_SRC")"
 
 ################################################################################
 # shorthand-functions
@@ -46,76 +46,6 @@ backup() {
     local bk=$1; shift 
     tar jcvf "${BACKUP_DIR:-/samba}/${bk}-$(date +%Y%m%d).tar.bz2" "$@"
 }
-
-################################################################################
-# utility-functions
-################################################################################
-
-defined() { declare -p "$1" &>/dev/null; }
-defined_func() { declare -f "$1" &>/dev/null; }
-
-# ANSI 8 colors
-declare -gA BASH_ANSI_COLOR
-BASH_ANSI_COLOR[black]=30
-BASH_ANSI_COLOR[red]=31
-BASH_ANSI_COLOR[green]=32
-BASH_ANSI_COLOR[yellow]=33
-BASH_ANSI_COLOR[blue]=34
-BASH_ANSI_COLOR[magenta]=35
-BASH_ANSI_COLOR[cyan]=36
-BASH_ANSI_COLOR[white]=37
-BASH_ANSI_COLOR[default]=39
-
-BASH_ANSI_COLOR[bg_black]=40
-BASH_ANSI_COLOR[bg_red]=41
-BASH_ANSI_COLOR[bg_green]=42
-BASH_ANSI_COLOR[bg_yellow]=43
-BASH_ANSI_COLOR[bg_blue]=44
-BASH_ANSI_COLOR[bg_magenta]=45
-BASH_ANSI_COLOR[bg_cyan]=46
-BASH_ANSI_COLOR[bg_white]=47
-BASH_ANSI_COLOR[bg_default]=49
-
-# ANSI color set
-BASH_ANSI_COLOR[bold]=1
-BASH_ANSI_COLOR[dim]=2
-BASH_ANSI_COLOR[underline]=4
-BASH_ANSI_COLOR[blink]=5
-BASH_ANSI_COLOR[invert]=7
-BASH_ANSI_COLOR[hidden]=8
-
-# ANSI color reset
-BASH_ANSI_COLOR[reset]=0
-BASH_ANSI_COLOR[reset_bold]=21
-BASH_ANSI_COLOR[reset_dim]=22
-BASH_ANSI_COLOR[reset_underline]=24
-BASH_ANSI_COLOR[reset_blink]=25
-BASH_ANSI_COLOR[reset_invert]=27
-BASH_ANSI_COLOR[reset_hidden]=28
-
-has_map() { local -n map="$1"; shift; [[ -n $1 && -n ${map[$1]} ]]; }
-set_color() {
-    local color="${BASH_ANSI_COLOR[default]}"
-    has_map BASH_ANSI_COLOR "$1" && color="${BASH_ANSI_COLOR[$1]}"
-    printf '\x1B[%sm' "$(has_map BASH_ANSI_COLOR "$2" \
-        && echo "$color;${BASH_ANSI_COLOR[$2]}" || echo "$color")"
-}
-color_echo() {
-    local color=default
-    local format
-    if has_map BASH_ANSI_COLOR "$1"; then
-        color="$1"; shift;
-        has_map BASH_ANSI_COLOR "$1" && { format="$1"; shift; }
-    fi
-    set_color "$color" "$format"
-    echo -ne "$@"
-    set_color reset
-    echo
-}
-
-msg() { color_echo yellow "$@" >&2; }
-warn() { color_echo red "$@" >&2; return 1; }
-error() { color_echo red "$@" >&2; exit 1; }
 
 # A function quickly markdown something.
 mark() {(
