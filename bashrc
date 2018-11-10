@@ -1,6 +1,9 @@
 # Copyright (c) 2018 Herbert Shen <ishbguy@hotmail.com> All Rights Reserved.
 # Released under the terms of the MIT License.
 
+# check whether it's an interative shell or return
+[[ $- == *i* ]] || return 0
+
 export BASHRC_ABS_SRC="$(realpath "${BASH_SOURCE[0]}")"
 export BASHRC_ABS_DIR="$(dirname "$BASHRC_ABS_SRC")"
 export BASHRC_SUBCONFIGS_DIR="$BASHRC_ABS_DIR/configs"
@@ -8,15 +11,20 @@ export BASHRC_SUBCONFIGS_DIR="$BASHRC_ABS_DIR/configs"
 # Source global definitions
 [[ -f /etc/bashrc ]] && source /etc/bashrc
 
-[[ -f $BASHRC_ABS_DIR/bash-utils ]] && source "$BASHRC_ABS_DIR/bash-utils"
-[[ -f $BASHRC_ABS_DIR/bash-precmd ]] && source "$BASHRC_ABS_DIR/bash-precmd"
-[[ -f $BASHRC_ABS_DIR/bash-prompt ]] && source "$BASHRC_ABS_DIR/bash-prompt"
+BASHRC_UNITS=(
+    bash-utils
+    bash-precmd
+    bash-prompt
+)
+for unit in "${BASHRC_UNITS[@]}"; do
+    [[ -f $BASHRC_ABS_DIR/$unit ]] && source "$BASHRC_ABS_DIR/$unit"
+done
 
 # source sub configs
 for cfg in "$BASHRC_SUBCONFIGS_DIR"/*.sh; do
     [[ -f $cfg ]] && source "$cfg"
 done
 
-return 0
+true
 
 # vim:set ft=sh ts=4 sw=4:
