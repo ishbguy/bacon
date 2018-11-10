@@ -25,6 +25,11 @@ for cfg in "$BASHRC_SUBCONFIGS_DIR"/*.sh; do
     [[ -f $cfg ]] && source "$cfg"
 done
 
+# source user's local configs
+for cfg in "$HOME/.bash-configs"/*.sh; do
+    [[ -f $cfg ]] && source "$cfg"
+done
+
 true
 
 # vim:set ft=sh ts=4 sw=4:
