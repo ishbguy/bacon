@@ -18,11 +18,6 @@ cd() {
 }
 
 weather() { curl "http://wttr.in/$1"; }
-lydump() { lynx -dump -display_charset="${2:-utf-8}" "$1"; }
-
-# function for ruby jekyll blog server to up and down
-jekill() { pkill -f jekyll; }
-jekyup() {(jekill; cd "${1:-$BLOG_DIR}" && jekyll serve -B)}
 
 #Man(): Read the manual by vim
 Man() {
@@ -32,12 +27,6 @@ Man() {
     local rv=$?
     unset ManFromShell
     return $rv
-}
-
-pip_upgrade() {
-    for pkg in $(pip list --outdate --format legacy | awk '{print $1}'); do
-        sudo pip install --upgrade "${pkg}"
-    done
 }
 
 #This function is used to backup
