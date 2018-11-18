@@ -44,7 +44,6 @@ fi
 bag base "$BAGS_DIR"
 bag plug "gh:ishbguy/baux"
 bag plug "gh:ishbguy/license"
-bag plug "gh:ishbguy/vim-config"
 bag load
 
 # vim:set ft=sh ts=4 sw=4:
