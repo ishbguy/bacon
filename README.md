@@ -5,7 +5,7 @@
 [licsvg]: https://img.shields.io/badge/license-MIT-green.svg
 [lic]: https://github.com/dotcon/bacon/blob/master/LICENSE
 
-![bash-config-example](https://github.com/dotcon/bacon/blob/master/screenshots/bash-config-example.png)
+![bash-config-example](https://github.com/dotcon/bacon/blob/master/screenshots/bacon-example.png)
 
 A **ba**sh  **con**figuration framework.
 
