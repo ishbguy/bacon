@@ -1,11 +1,13 @@
-# [bash-config](https://github.com/ishbguy/bash-config)
+# [bacon](https://github.com/dotcon/bacon)
 
 [![License][licsvg]][lic]
 
 [licsvg]: https://img.shields.io/badge/license-MIT-green.svg
-[lic]: https://github.com/ishbguy/bash-config/blob/master/LICENSE
+[lic]: https://github.com/dotcon/bacon/blob/master/LICENSE
 
-![bash-config-example](https://github.com/ishbguy/bash-config/blob/master/screenshots/bash-config-example.png)
+![bash-config-example](https://github.com/dotcon/bacon/blob/master/screenshots/bash-config-example.png)
+
+A **ba**sh  **con**figuration framework.
 
 ## Table of Contents
 
