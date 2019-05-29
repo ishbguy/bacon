@@ -26,7 +26,7 @@ for cfg in "$BASHRC_SUBCONFIGS_DIR"/*.sh; do
 done
 
 # source user's local configs
-for cfg in "$HOME/.bash-configs"/*.sh; do
+for cfg in $HOME/.bacon/*.sh $HOME/.bash-configs/*.sh; do
     [[ -f $cfg ]] && source "$cfg"
 done
 
