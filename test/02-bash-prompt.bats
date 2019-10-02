@@ -1,9 +1,9 @@
 #!/usr/bin/env bats
 
 load bats-helper
-source ../bash-utils
-source ../bash-precmd
-source ../"$(filename)"
+source ../lib/bash-utils
+source ../lib/bash-precmd
+source ../lib/"$(filename)"
 
 @test "test bash_prompt_color" {
     run bash_prompt_color "test"

@@ -9,7 +9,7 @@ export BASHRC_ABS_DIR="$(dirname "$BASHRC_ABS_SRC")"
 export BASHRC_SUBCONFIGS_DIR="$BASHRC_ABS_DIR/configs"
 
 # Source global definitions
-[[ -f /etc/bashrc ]] && source /etc/bashrc
+[[ -e /etc/bashrc ]] && source /etc/bashrc
 
 BASHRC_UNITS=(
     bash-utils
@@ -17,19 +17,20 @@ BASHRC_UNITS=(
     bash-prompt
 )
 for unit in "${BASHRC_UNITS[@]}"; do
-    [[ -f $BASHRC_ABS_DIR/$unit ]] && source "$BASHRC_ABS_DIR/$unit"
+    # shellcheck disable=SC1090,SC2015
+    [[ -f $BASHRC_ABS_DIR/lib/$unit ]] && source "$BASHRC_ABS_DIR/lib/$unit" || true
 done
 
 # source sub configs
 for cfg in "$BASHRC_SUBCONFIGS_DIR"/*.sh; do
-    [[ -f $cfg ]] && source "$cfg"
+    # shellcheck disable=SC1090,SC2015
+    [[ -f $cfg ]] && source "$cfg" || true
 done
 
 # source user's local configs
-for cfg in $HOME/.bacon/*.sh $HOME/.bash-configs/*.sh; do
-    [[ -f $cfg ]] && source "$cfg"
+for cfg in "$HOME"/.bacon/*.sh "$HOME"/.bash-configs/*.sh; do
+    # shellcheck disable=SC1090,SC2015
+    [[ -f $cfg ]] && source "$cfg" || true
 done
-
-true
 
 # vim:set ft=sh ts=4 sw=4:
