@@ -30,7 +30,7 @@ if hash mutt &>/dev/null && hash offlineimap &>/dev/null; then
     }
 fi
 
-defined BASH_PROMPT_COUNTERS \
-    && BASH_PROMPT_COUNTERS+=('tmux list-sessions 2>/dev/null | grep -v ^no | wc -l')
+bacon_defined BACON_PROMPT_COUNTERS \
+    && BACON_PROMPT_COUNTERS+=('tmux list-sessions 2>/dev/null | grep -v ^no | wc -l')
 
 # vim:set ft=sh ts=4 sw=4:

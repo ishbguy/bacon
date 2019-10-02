@@ -34,7 +34,7 @@ if hash rclone &>/dev/null; then
     alias task-pull='rclone sync onedrive:task ~/.task'
 fi
 
-defined BASH_PROMPT_COUNTERS \
-    && BASH_PROMPT_COUNTERS+=('task status:pending count')
+bacon_defined BACON_PROMPT_COUNTERS \
+    && BACON_PROMPT_COUNTERS+=('task status:pending count')
 
 # vim:set ft=sh ts=4 sw=4:

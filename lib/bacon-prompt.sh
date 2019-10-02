@@ -1,50 +1,50 @@
 # Copyright (c) 2018 Herbert Shen <ishbguy@hotmail.com> All Rights Reserved.
 # Released under the terms of the MIT License.
 
-export BASH_PROMPT_ABS_SRC="$(realpath "${BASH_SOURCE[0]}")"
-export BASH_PROMPT_ABS_DIR="$(dirname "$BASH_PROMPT_ABS_SRC")"
+export BACON_PROMPT_ABS_SRC="$(realpath "${BASH_SOURCE[0]}")"
+export BACON_PROMPT_ABS_DIR="$(dirname "$BACON_PROMPT_ABS_SRC")"
 
-# declare -p BASH_PRECMDS &>/dev/null || return 1
-# declare -p BASH_ANSI_COLOR &>/dev/null || return 1
+# declare -p BACON_PRECMDS &>/dev/null || return 1
+# declare -p BACON_ANSI_COLOR &>/dev/null || return 1
 
-declare -ga BASH_PROMPT_PS1_LAYOUT=()
-declare -ga BASH_PROMPT_COUNTERS=()
-declare -gA BASH_PROMPT_COLOR=()
-declare -gA BASH_PROMPT_CHARS=()
+declare -ga BACON_PROMPT_PS1_LAYOUT=()
+declare -ga BACON_PROMPT_COUNTERS=()
+declare -gA BACON_PROMPT_COLOR=()
+declare -gA BACON_PROMPT_CHARS=()
 
-bash_prompt_color() {
-    local color="${BASH_ANSI_COLOR[default]}"
-    if has_map BASH_ANSI_COLOR "$1"; then
-        color="${BASH_ANSI_COLOR[$1]}"; shift;
-        has_map BASH_ANSI_COLOR "$1" \
-            && { color="$color;${BASH_ANSI_COLOR[$1]}"; shift; }
+bacon_prompt_color() {
+    local color="${BACON_ANSI_COLOR[default]}"
+    if bacon_has_map BACON_ANSI_COLOR "$1"; then
+        color="${BACON_ANSI_COLOR[$1]}"; shift;
+        bacon_has_map BACON_ANSI_COLOR "$1" \
+            && { color="$color;${BACON_ANSI_COLOR[$1]}"; shift; }
     fi
     color="\\[\\033[${color}m\\]"
     printf '%s%s%s\n' "$color" "$*" '\[\033[00m\]'
 }
 
-bash_prompt_last_status() {
-    local color="${BASH_PROMPT_COLOR[last_fail]:-red}"
-    [[ $LAST_STATUS -eq 0 ]] && color="${BASH_PROMPT_COLOR[last_ok]:-green}"
-    bash_prompt_color $color "${BASH_PROMPT_CHARS[last_status]:-&}"
+bacon_prompt_last_status() {
+    local color="${BACON_PROMPT_COLOR[last_fail]:-red}"
+    [[ $LAST_STATUS -eq 0 ]] && color="${BACON_PROMPT_COLOR[last_ok]:-green}"
+    bacon_prompt_color $color "${BACON_PROMPT_CHARS[last_status]:-&}"
 }
 
-bash_prompt_time() {
-    bash_prompt_color ${BASH_PROMPT_COLOR[time]:-green} \
-        "${BASH_PROMPT_CHARS[time]:-[\A]}"
+bacon_prompt_time() {
+    bacon_prompt_color ${BACON_PROMPT_COLOR[time]:-green} \
+        "${BACON_PROMPT_CHARS[time]:-[\A]}"
 }
 
-bash_prompt_location() {
-    bash_prompt_color ${BASH_PROMPT_COLOR[location]:-blue} \
-        "${BASH_PROMPT_CHARS[location]:-[\u@\h:\W]}"
+bacon_prompt_location() {
+    bacon_prompt_color ${BACON_PROMPT_COLOR[location]:-blue} \
+        "${BACON_PROMPT_CHARS[location]:-[\u@\h:\W]}"
 }
 
-BASH_PROMPT_COUNTERS+=('dirs -p | tail -n +2 | wc -l')
-BASH_PROMPT_COUNTERS+=('jobs -p | wc -l')
-bash_prompt_counter() {
+BACON_PROMPT_COUNTERS+=('dirs -p | tail -n +2 | wc -l')
+BACON_PROMPT_COUNTERS+=('jobs -p | wc -l')
+bacon_prompt_counter() {
     local -A counters
     local str=''
-    for cnt in "${BASH_PROMPT_COUNTERS[@]}"; do
+    for cnt in "${BACON_PROMPT_COUNTERS[@]}"; do
         local nr="$(eval "$cnt")"
         [[ $nr =~ ^[[:digit:]]+$ && $nr != 0 ]] || continue
         cnt="${cnt// /}"
@@ -55,30 +55,30 @@ bash_prompt_counter() {
             break
         done
     done
-    [[ -n $str ]] && bash_prompt_color ${BASH_PROMPT_COLOR[counter]:-yellow} "[$str]"
+    [[ -n $str ]] && bacon_prompt_color ${BACON_PROMPT_COLOR[counter]:-yellow} "[$str]"
 }
 
-bash_prompt_dollar() {
-    bash_prompt_color ${BASH_PROMPT_COLOR[dollar]:-blue} \
-        "${BASH_PROMPT_CHARS[dollar]:-\$ }"
+bacon_prompt_dollar() {
+    bacon_prompt_color ${BACON_PROMPT_COLOR[dollar]:-blue} \
+        "${BACON_PROMPT_CHARS[dollar]:-\$ }"
 }
 
-BASH_PROMPT_PS1_LAYOUT=(
-    bash_prompt_last_status
-    bash_prompt_time
-    bash_prompt_location
-    bash_prompt_counter
+BACON_PROMPT_PS1_LAYOUT=(
+    bacon_prompt_last_status
+    bacon_prompt_time
+    bacon_prompt_location
+    bacon_prompt_counter
 )
-bash_prompt_PS1() {
+bacon_prompt_PS1() {
     PS1=
-    for layout in "${BASH_PROMPT_PS1_LAYOUT[@]}"; do
-        definedf "$layout" && PS1+="$($layout)"
+    for layout in "${BACON_PROMPT_PS1_LAYOUT[@]}"; do
+        bacon_definedf "$layout" && PS1+="$($layout)"
     done
-    PS1+="$(bash_prompt_dollar)"
+    PS1+="$(bacon_prompt_dollar)"
     export PS1
 }
 
-BASH_PRECMDS+=('bash_prompt_PS1')
+BACON_PRECMDS+=('bacon_prompt_PS1')
 
 export PS4='+ $(basename ${0##+(-)}) line $LINENO: '
 

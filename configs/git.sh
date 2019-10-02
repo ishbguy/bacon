@@ -45,7 +45,7 @@ alias git_merge_work='git pull && git reset --merge ORIG_HEAD'
 
 github() { git clone "https://github.com/$1"; }
 
-if defined BASH_PROMPT_PS1_LAYOUT && definedf bash_prompt_color; then
+if bacon_defined BACON_PROMPT_PS1_LAYOUT && bacon_definedf bacon_prompt_color; then
     bash_prompt_git_branch() {
         local branch="$(git symbolic-ref --short HEAD 2>/dev/null)"
         local cmp="$(git status 2>/dev/null | grep 'Your branch is' | awk '{print $4,$7,$8}')"
@@ -61,9 +61,9 @@ if defined BASH_PROMPT_PS1_LAYOUT && definedf bash_prompt_color; then
             branch+=":$s"
         done
         [[ -n $branch ]] \
-            && bash_prompt_color ${BASH_PROMPT_COLOR[git]:-magenta} "[$branch]"
+            && bacon_prompt_color ${BACON_PROMPT_COLOR[git]:-magenta} "[$branch]"
     }
-    BASH_PROMPT_PS1_LAYOUT+=(bash_prompt_git_branch)
+    BACON_PROMPT_PS1_LAYOUT+=(bash_prompt_git_branch)
 fi
 
 # vim:set ft=sh ts=4 sw=4:
