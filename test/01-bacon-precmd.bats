@@ -1,7 +1,7 @@
 #!/usr/bin/env bats
 
 load bats-helper
-source ../lib/"$(filename)"
+source ../lib/"$(filename)".sh
 
 @test "test bash_precmd" {
     BASH_PRECMDS=()

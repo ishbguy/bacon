@@ -1,7 +1,7 @@
 #!/usr/bin/env bats
 
 load bats-helper
-source ../lib/"$(filename)"
+source ../lib/"$(filename)".sh
 
 @test "test has_map" {
     run has_map NO_MAP
@@ -68,7 +68,7 @@ source ../lib/"$(filename)"
 }
 
 @test "test is_sourced" {
-    echo "source ../lib/$(filename); is_sourced && echo yes || echo no" >"$PROJECT_TEST_DIR"/test_is_sourced.sh
+    echo "source ../lib/$(filename).sh; is_sourced && echo yes || echo no" >"$PROJECT_TEST_DIR"/test_is_sourced.sh
 
     run source "$PROJECT_TEST_DIR"/test_is_sourced.sh
     assert_success

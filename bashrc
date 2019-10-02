@@ -12,9 +12,9 @@ export BASHRC_SUBCONFIGS_DIR="$BASHRC_ABS_DIR/configs"
 [[ -e /etc/bashrc ]] && source /etc/bashrc
 
 BASHRC_UNITS=(
-    bash-utils
-    bash-precmd
-    bash-prompt
+    bacon-utils.sh
+    bacon-precmd.sh
+    bacon-prompt.sh
 )
 for unit in "${BASHRC_UNITS[@]}"; do
     # shellcheck disable=SC1090,SC2015
