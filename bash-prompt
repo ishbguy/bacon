@@ -4,8 +4,8 @@
 export BASH_PROMPT_ABS_SRC="$(realpath "${BASH_SOURCE[0]}")"
 export BASH_PROMPT_ABS_DIR="$(dirname "$BASH_PROMPT_ABS_SRC")"
 
-declare -p BASH_PRECMDS &>/dev/null || return 1
-declare -p BASH_ANSI_COLOR &>/dev/null || return 1
+# declare -p BASH_PRECMDS &>/dev/null || return 1
+# declare -p BASH_ANSI_COLOR &>/dev/null || return 1
 
 declare -ga BASH_PROMPT_PS1_LAYOUT=()
 declare -ga BASH_PROMPT_COUNTERS=()
@@ -28,14 +28,17 @@ bash_prompt_last_status() {
     [[ $LAST_STATUS -eq 0 ]] && color="${BASH_PROMPT_COLOR[last_ok]:-green}"
     bash_prompt_color $color "${BASH_PROMPT_CHARS[last_status]:-&}"
 }
+
 bash_prompt_time() {
     bash_prompt_color ${BASH_PROMPT_COLOR[time]:-green} \
         "${BASH_PROMPT_CHARS[time]:-[\A]}"
 }
+
 bash_prompt_location() {
     bash_prompt_color ${BASH_PROMPT_COLOR[location]:-blue} \
         "${BASH_PROMPT_CHARS[location]:-[\u@\h:\W]}"
 }
+
 BASH_PROMPT_COUNTERS+=('dirs -p | tail -n +2 | wc -l')
 BASH_PROMPT_COUNTERS+=('jobs -p | wc -l')
 bash_prompt_counter() {
@@ -54,10 +57,12 @@ bash_prompt_counter() {
     done
     [[ -n $str ]] && bash_prompt_color ${BASH_PROMPT_COLOR[counter]:-yellow} "[$str]"
 }
+
 bash_prompt_dollar() {
     bash_prompt_color ${BASH_PROMPT_COLOR[dollar]:-blue} \
         "${BASH_PROMPT_CHARS[dollar]:-\$ }"
 }
+
 BASH_PROMPT_PS1_LAYOUT=(
     bash_prompt_last_status
     bash_prompt_time

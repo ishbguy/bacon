@@ -44,41 +44,90 @@ BASH_ANSI_COLOR[reset_blink]=25
 BASH_ANSI_COLOR[reset_invert]=27
 BASH_ANSI_COLOR[reset_hidden]=28
 
-has_map() { local -n map="$1"; shift; [[ -n $1 && -n ${map[$1]} ]]; }
+has_map() {
+    local -n map="$1"
+    shift
+    [[ -n $1 && -n ${map[$1]} ]]
+}
+
 set_color() {
     local color="${BASH_ANSI_COLOR[default]}"
     has_map BASH_ANSI_COLOR "$1" && color="${BASH_ANSI_COLOR[$1]}"
-    printf '\x1B[%sm' "$(has_map BASH_ANSI_COLOR "$2" \
-        && echo "$color;${BASH_ANSI_COLOR[$2]}" || echo "$color")"
-    }
+    printf '\x1B[%sm' "$(has_map BASH_ANSI_COLOR "$2" &&
+        echo "$color;${BASH_ANSI_COLOR[$2]}" || echo "$color")"
+}
+
 color_echo() {
     local color=default
     local format
     if has_map BASH_ANSI_COLOR "$1"; then
-        color="$1"; shift;
-        has_map BASH_ANSI_COLOR "$1" && { format="$1"; shift; }
+        color="$1"
+        shift
+        has_map BASH_ANSI_COLOR "$1" && {
+            format="$1"
+            shift
+        }
     fi
     set_color "$color" "$format"
     echo -ne "$@"
     set_color reset
     echo
 }
-msg() { color_echo yellow "$@" >&2; }
-warn() { color_echo red "$@" >&2; return 1; }
-die() { color_echo red "$@" >&2; exit 1; }
-defined() { [[ -v $1 ]]; }
-definedf() { declare -f "$1" &>/dev/null; }
-is_sourced() { [[ -n ${FUNCNAME[1]} && ${FUNCNAME[1]} != "main" ]]; }
-is_array() { local -a def=($(declare -p "$1" 2>/dev/null)); [[ ${def[1]} =~ a ]]; }
-is_map() { local -a def=($(declare -p "$1" 2>/dev/null)); [[ ${def[1]} =~ A ]]; }
-has_tool() { hash "$1" &>/dev/null; }
-ensure() {
-    local cmd="$1"; shift
-    local -a info=($(caller 0))
-    (eval "$cmd" &>/dev/null) || die "${info[2]}:${info[0]}:${info[1]}:" \
-        "${FUNCNAME[0]} '$cmd' failed." "$@"
+
+msg() {
+    color_echo yellow "$@" >&2
 }
-date_cmp() { echo "$(($(date -d "$1" +%s) - $(date -d "$2" +%s)))"; }
+
+warn() {
+    color_echo red "$@" >&2
+    return 1
+}
+
+die() {
+    color_echo red "$@" >&2
+    exit 1
+}
+
+defined() {
+    [[ -v $1 ]]
+}
+
+definedf() {
+    declare -f "$1" &>/dev/null
+}
+
+is_sourced() {
+    [[ -n ${FUNCNAME[1]} && ${FUNCNAME[1]} != "main" ]]
+}
+
+is_array() {
+    mapfile -td ' ' def <<<"$(declare -p "$1" 2>/dev/null)"
+    [[ ${def[1]} =~ a ]]
+}
+
+is_map() {
+    mapfile -td ' ' def <<<"$(declare -p "$1" 2>/dev/null)"
+    [[ ${def[1]} =~ A ]]
+}
+
+has_tool() {
+    command -v "$1" &>/dev/null
+}
+
+ensure() {
+    local cmd="$1"
+    shift
+    local -a info=($(caller 0))
+    local info_str="${info[2]}:${info[0]}:${info[1]}"
+    if ! (eval "$cmd" &>/dev/null); then
+        die "$info_str: ${FUNCNAME[0]} '$cmd' failed." "$@"
+    fi
+}
+
+date_cmp() {
+    echo "$(($(date -d "$1" +%s) - $(date -d "$2" +%s)))"
+}
+
 pargs() {
     ensure "[[ $# -ge 3 ]]" "Need OPTIONS, ARGUMENTS and OPTSTRING"
     ensure "[[ -n $1 && -n $2 && -n $3 ]]" "Args should not be empty."
@@ -97,6 +146,7 @@ pargs() {
     done
     shift $((OPTIND - 1))
 }
+
 chkobj() {
     ensure "[[ $# -gt 2 ]]" "Not enough args."
     ensure "definedf $1" "$1 should be a defined func."
@@ -110,8 +160,17 @@ chkobj() {
     done
     [[ ${#miss[@]} -eq 0 ]] || die "$msg: ${miss[*]}."
 }
-chkvar() { chkobj defined "You need to define vars" "$@"; }
-chkfunc() { chkobj definedf "You need to define funcs" "$@"; }
-chktool() { chkobj has_tool "You need to install tools" "$@"; }
+
+chkvar() {
+    chkobj defined "You need to define vars" "$@"
+}
+
+chkfunc() {
+    chkobj definedf "You need to define funcs" "$@"
+}
+
+chktool() {
+    chkobj has_tool "You need to install tools" "$@"
+}
 
 # vim:set ft=sh ts=4 sw=4:
