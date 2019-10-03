@@ -1,7 +1,7 @@
 #!/usr/bin/env bats
 
 load bats-helper
-source ../lib/"$(filename)".sh
+load bacon-helper
 
 @test "test bacon_has_map" {
     run bacon_has_map NO_MAP
@@ -68,13 +68,13 @@ source ../lib/"$(filename)".sh
 }
 
 @test "test bacon_is_sourced" {
-    echo "source ../lib/$(filename).sh; bacon_is_sourced && echo yes || echo no" >"$PROJECT_TEST_DIR"/test_is_sourced.sh
+    echo "source $(suitedir)/../lib/$(suitename).sh; bacon_is_sourced && echo yes || echo no" >"$PROJECT_TMP_DIR"/test_is_sourced.sh
 
-    run source "$PROJECT_TEST_DIR"/test_is_sourced.sh
+    run source "$PROJECT_TMP_DIR"/test_is_sourced.sh
     assert_success
     assert_output yes
 
-    run bash "$PROJECT_TEST_DIR"/test_is_sourced.sh
+    run bash "$PROJECT_TMP_DIR"/test_is_sourced.sh
     assert_success
     assert_output no
 }
@@ -115,7 +115,7 @@ source ../lib/"$(filename)".sh
 }
 
 @test "test bacon_ensure" {
-    run bacon_ensure "[[ -d $PROJECT_TEST_DIR ]]" "$PROJECT_TEST_DIR is not a dir"
+    run bacon_ensure "[[ -d $PROJECT_TMP_DIR ]]" "$PROJECT_TMP_DIR is not a dir"
     assert_success
     run bacon_ensure "[[ -d xxxx ]]" "xxxx is not a dir"
     assert_failure
@@ -170,8 +170,8 @@ source ../lib/"$(filename)".sh
     assert_match 'file does not exist: xxx.'
     run bacon_require_base is_exist "file does not exist" one two
     assert_match 'file does not exist: one.*two.'
-    touch "$PROJECT_TEST_DIR"/bacon_require_base_file
-    run bacon_require_base is_exist "file does not exist" "$PROJECT_TEST_DIR"/bacon_require_base_file
+    touch "$PROJECT_TMP_DIR"/bacon_require_base_file
+    run bacon_require_base is_exist "file does not exist" "$PROJECT_TMP_DIR"/bacon_require_base_file
     assert_success
 }
 

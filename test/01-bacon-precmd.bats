@@ -1,7 +1,7 @@
 #!/usr/bin/env bats
 
 load bats-helper
-source ../lib/"$(filename)".sh
+load bacon-helper
 
 @test "test bacon_precmd" {
     BACON_PRECMDS=()

@@ -1,20 +1,28 @@
 #!/usr/bin/env bash
 
 # guard against executing this block twice due to bats internals
-if [ -z "$PROJECT_TEST_DIR" ]; then
-    PROJECT_TEST_DIR="${BATS_TMPDIR}/project"
-    export PROJECT_TEST_DIR="$(mktemp -d "${PROJECT_TEST_DIR}.XXX" 2>/dev/null || echo "$PROJECT_TEST_DIR")"
-    export PROJECT_TEST_DIR="$(readlink -f "$PROJECT_TEST_DIR" 2>/dev/null || echo "$PROJECT_TEST_DIR")"
+if [ -z "$PROJECT_TMP_DIR" ]; then
+    PROJECT_TMP_DIR="${BATS_TMPDIR}/project"
+    # shellcheck disable=SC2155
+    export PROJECT_TMP_DIR="$(mktemp -d "${PROJECT_TMP_DIR}.XXX" 2>/dev/null || echo "$PROJECT_TMP_DIR")"
+    # shellcheck disable=SC2155
+    export PROJECT_TMP_DIR="$(readlink -f "$PROJECT_TMP_DIR" 2>/dev/null || echo "$PROJECT_TMP_DIR")"
 fi
 
 setup() {
-    [[ -e $PROJECT_TEST_DIR ]] || mkdir -p "$PROJECT_TEST_DIR"
+    [[ -e $PROJECT_TMP_DIR ]] || mkdir -p "$PROJECT_TMP_DIR"
 }
 teardown() {
-    rm -rf "$PROJECT_TEST_DIR"
+    rm -rf "$PROJECT_TMP_DIR"
 }
 
-filename() {
+abspath() {
+    readlink -f "$1"
+}
+suitedir() {
+    dirname "$(abspath "$BATS_TEST_FILENAME")"
+}
+suitename() {
     basename "$BATS_TEST_FILENAME" .bats | sed 's:^[0-9][0-9]-::'
 }
 puts() {
