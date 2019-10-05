@@ -2,6 +2,7 @@
 # Copyright (c) 2018 Herbert Shen <ishbguy@hotmail.com> All Rights Reserved.
 # Released under the terms of the MIT License.
 
+# shellcheck disable=SC2155
 export BACON_UTILS_ABS_SRC="$(realpath "${BASH_SOURCE[0]}")"
 export BACON_UTILS_ABS_DIR="$(dirname "$BACON_UTILS_ABS_SRC")"
 
@@ -57,43 +58,84 @@ bacon_set_color() {
         echo "$color;${BACON_ANSI_COLOR[$2]}" || echo "$color")"
 }
 
-bacon_color_echo() {
+bacon_printc() {
     local color=default
     local format
     if bacon_has_map BACON_ANSI_COLOR "$1"; then
         color="$1"
         shift
-        bacon_has_map BACON_ANSI_COLOR "$1" && {
+        if bacon_has_map BACON_ANSI_COLOR "$1"; then
             format="$1"
             shift
-        }
+        fi
     fi
-    bacon_set_color "$color" "$format"
-    echo -ne "$@"
-    bacon_set_color reset
-    echo
+    local IFS=' '
+    printf "%s%s%s\n" "$(bacon_set_color "$color" "$format")" "$*" "$(bacon_set_color reset)"
+}
+
+bacon_puts() {
+    local IFS=' '
+    printf "%s\n" "$*"
+}
+
+bacon_debug() {
+    local IFS=' '
+    [[ -z $BACON_DEBUG ]] || bacon_puts "DEBUG: $*"
 }
 
 bacon_msg() {
-    bacon_color_echo yellow "$@" >&2
+    bacon_printc yellow "$@" >&2
 }
 
 bacon_warn() {
-    bacon_color_echo red "$@" >&2
+    bacon_printc red "$@" >&2
     return 1
 }
 
 bacon_die() {
-    bacon_color_echo red "$@" >&2
+    bacon_printc red "$@" >&2
     exit 1
 }
 
 bacon_defined() {
-    [[ -v $1 ]]
+    # [[ -v $1 ]]
+    declare -p "$1" &>/dev/null
 }
 
 bacon_definedf() {
     declare -f "$1" &>/dev/null
+}
+
+bacon_typeof() {
+    # shellcheck disable=SC2034
+    if ! bacon_defined BACON_TYPE; then
+        declare -gA BACON_TYPE=()
+        BACON_TYPE[-]="normal"
+        BACON_TYPE[a]="array"
+        BACON_TYPE[A]="map"
+        BACON_TYPE[i]="integer"
+        BACON_TYPE[l]="lower"
+        BACON_TYPE[u]="upper"
+        BACON_TYPE[n]="reference"
+        BACON_TYPE[x]="export"
+        BACON_TYPE[f]="function"
+        # BACON_TYPE[r]="readonly"
+        # BACON_TYPE[g]="global"
+    fi
+    [[ $# == 1 && -n $1 ]] || return 1
+    if declare -p "$1" &>/dev/null; then
+        local IFS=' '
+        # shellcheck disable=SC2207
+        local -a out=($(declare -p "$1"))
+        local type="${out[1]}"
+        [[ $type =~ -([-aAilunx]) ]]
+        echo "${BACON_TYPE[${BASH_REMATCH[1]}]}"
+    elif declare -F "$1" &>/dev/null; then
+        echo "function"
+    else
+        return 1
+    fi
+    return 0
 }
 
 bacon_is_sourced() {
@@ -114,10 +156,20 @@ bacon_has_cmd() {
     command -v "$1" &>/dev/null
 }
 
+bacon_is_exist() {
+    [[ -e $1 ]] &>/dev/null
+}
+
 bacon_ensure() {
+    #  shellcheck disable=SC2015
+    [[ -z $BACON_NO_ENSURE ]] || return 0
     local cmd="$1"
     shift
-    local -a info=($(caller 0))
+    # shellcheck disable=SC2207
+    local -a info=($(
+        IFS=' '
+        caller 0
+    ))
     local info_str="${info[2]}:${info[0]}:${info[1]}"
     if ! (eval "$cmd" &>/dev/null); then
         bacon_die "$info_str: ${FUNCNAME[0]} '$cmd' failed." "$@"
@@ -141,7 +193,9 @@ bacon_pargs() {
     OPTIND=1
     while getopts "$optstr" opt; do
         [[ $opt == ":" || $opt == "?" ]] && bacon_die "$HELP"
+        # shellcheck disable=SC2034
         __opt[$opt]=1
+        # shellcheck disable=SC2034
         __arg[$opt]="$OPTARG"
     done
     shift $((OPTIND - 1))
@@ -171,6 +225,55 @@ bacon_require_func() {
 
 bacon_require_cmd() {
     bacon_require_base bacon_has_cmd "You need to install cmds" "$@"
+}
+
+bacon_require() {
+    bacon_require_base bacon_is_exist "No such files or dirs" "$@"
+}
+
+bacon_abs_path() {
+    readlink -f "$1"
+}
+
+bacon_self() {
+    bacon_abs_path "${BASH_SOURCE[1]}"
+}
+
+bacon_lib() {
+    bacon_abs_path "${BASH_SOURCE[0]%/*}"
+}
+
+bacon_load() {
+    # shellcheck disable=SC2155
+    [[ -n $BACON_LIB_PATH ]] || export BACON_LIB_PATH="$(bacon_lib)"
+    # shellcheck disable=SC2155
+    [[ $BACON_LIB_PATH =~ $(bacon_lib) ]] || export BACON_LIB_PATH="$(bacon_lib):$BACON_LIB_PATH"
+    bacon_defined BACON_LOADED || declare -gA BACON_LOADED=()
+
+    [[ $# == 1 && -n $1 ]] || return 1
+
+    local lib="$1"
+    while read -r -d ':' dir; do
+        # shellcheck disable=SC1090
+        if [[ -f $dir/$lib.sh ]]; then
+            if ! bacon_has_map BACON_LOADED "$lib"; then
+                # shellcheck disable=SC1090,SC2034
+                source "$dir/$lib.sh" && BACON_LOADED[$lib]="$dir/$lib.sh"
+                return 0
+            fi
+        fi
+    done <<<"$BACON_LIB_PATH:"
+    return 1
+}
+
+bacon_export() {
+    [[ $# == 1 && -n $1 ]] || return 1
+    local -u ns="$1"
+    local src="$(bacon_abs_path "${BASH_SOURCE[1]}")"
+    local dir="$(dirname "$src")"
+    
+    eval "export BACON_EXPORT_${ns}_ABS_SRC=$src"
+    eval "export BACON_EXPORT_${ns}_ABS_DIR=$dir"
 }
 
 # vim:set ft=sh ts=4 sw=4:
