@@ -4,7 +4,7 @@
 
 hash task &>/dev/null || return 1
 
-export BASH_CONFIG_TASK_SRC="$(realpath "${BASH_SOURCE[0]}")"
+export BASH_CONFIG_TASK_SRC="$(readlink -f "${BASH_SOURCE[0]}")"
 export BASH_CONFIG_TASK_DIR="$(dirname "$BASH_CONFIG_TASK_SRC")"
 
 alias taskP='task all status:pending'

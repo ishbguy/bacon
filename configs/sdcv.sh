@@ -4,7 +4,7 @@
 
 hash sdcv &>/dev/null || return 1
 
-export BASH_CONFIG_SDCV_SRC="$(realpath "${BASH_SOURCE[0]}")"
+export BASH_CONFIG_SDCV_SRC="$(readlink -f "${BASH_SOURCE[0]}")"
 export BASH_CONFIG_SDCV_DIR="$(dirname "$BASH_CONFIG_SDCV_SRC")"
 
 # alias for stardict sdcv

@@ -5,7 +5,7 @@
 [licsvg]: https://img.shields.io/badge/license-MIT-green.svg
 [lic]: https://github.com/dotcon/bacon/blob/master/LICENSE
 
-![bash-config-example](https://github.com/dotcon/bacon/blob/master/screenshots/bacon-example.png)
+![bacon-example](https://github.com/dotcon/bacon/blob/master/screenshots/bacon-example.png)
 
 A **ba**sh  **con**figuration framework.
 
@@ -30,13 +30,12 @@ A **ba**sh  **con**figuration framework.
 
 > + `bash` 4.2 or later
 > + `git`
-> + `realpath`
 
 ## :rocket: Installation
 
 ```
-$ git clone https://github.com/ishbguy/bash-config /path/to/bash-config
-$ cd /path/to/bash-config && ./install.sh
+$ git clone https://github.com/dotcon/bacon /path/to/bacon
+$ cd /path/to/bacon && ./bin/bacon-install.sh
 ```
 
 ## :hibiscus: Contributing

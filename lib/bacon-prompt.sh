@@ -1,7 +1,7 @@
 # Copyright (c) 2018 Herbert Shen <ishbguy@hotmail.com> All Rights Reserved.
 # Released under the terms of the MIT License.
 
-export BACON_PROMPT_ABS_SRC="$(realpath "${BASH_SOURCE[0]}")"
+export BACON_PROMPT_ABS_SRC="$(readlink -f "${BASH_SOURCE[0]}")"
 export BACON_PROMPT_ABS_DIR="$(dirname "$BACON_PROMPT_ABS_SRC")"
 
 # declare -p BACON_PRECMDS &>/dev/null || return 1

@@ -4,7 +4,7 @@
 
 hash dircolors &>/dev/null || return 1
 
-export BASH_CONFIG_LS_SRC="$(realpath "${BASH_SOURCE[0]}")"
+export BASH_CONFIG_LS_SRC="$(readlink -f "${BASH_SOURCE[0]}")"
 export BASH_CONFIG_LS_DIR="$(dirname "$BASH_CONFIG_LS_SRC")"
 
 # Setting the ls colors

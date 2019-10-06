@@ -4,7 +4,7 @@
 
 hash systemctl &>/dev/null || return 1
 
-export BASH_CONFIG_SYSTEMD_SRC="$(realpath "${BASH_SOURCE[0]}")"
+export BASH_CONFIG_SYSTEMD_SRC="$(readlink -f "${BASH_SOURCE[0]}")"
 export BASH_CONFIG_SYSTEMD_DIR="$(dirname "$BASH_CONFIG_SYSTEMD_SRC")"
 
 alias scdis='systemctl disable'

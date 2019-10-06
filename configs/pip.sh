@@ -4,7 +4,7 @@
 
 hash pip &>/dev/null || return 1
 
-export BASH_CONFIG_PIP_SRC="$(realpath "${BASH_SOURCE[0]}")"
+export BASH_CONFIG_PIP_SRC="$(readlink -f "${BASH_SOURCE[0]}")"
 export BASH_CONFIG_PIP_DIR="$(dirname "$BASH_CONFIG_PIP_SRC")"
 
 pip_upgrade() {

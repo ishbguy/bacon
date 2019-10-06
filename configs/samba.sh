@@ -4,7 +4,7 @@
 
 hash pdbedit &>/dev/null || return 1
 
-export BASH_CONFIG_SAMBA_SRC="$(realpath "${BASH_SOURCE[0]}")"
+export BASH_CONFIG_SAMBA_SRC="$(readlink -f "${BASH_SOURCE[0]}")"
 export BASH_CONFIG_SAMBA_DIR="$(dirname "$BASH_CONFIG_SAMBA_SRC")"
 
 #mysmbadd(): SMB user add.

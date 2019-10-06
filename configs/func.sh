@@ -2,7 +2,7 @@
 # Copyright (c) 2018 Herbert Shen <ishbguy@hotmail.com> All Rights Reserved.
 # Released under the terms of the MIT License.
 
-export BASH_CONFIGS_FUNC_ABS_SRC="$(realpath "${BASH_SOURCE[0]}")"
+export BASH_CONFIGS_FUNC_ABS_SRC="$(readlink -f "${BASH_SOURCE[0]}")"
 export BASH_CONFIGS_FUNC_ABS_DIR="$(dirname "$BASH_CONFIGS_FUNC_ABS_SRC")"
 
 ################################################################################
@@ -189,7 +189,7 @@ tagit() {(
     if [[ $TAG_OPT -eq $DEL_TAG || $TAG_OPT -eq $ADD_TAG \
         || $TAG_OPT -eq $ADD_CLS_TAG || $TAG_OPT -eq $LST_TAG ]]; then
         for FILE in ${FILES[@]}; do
-            FULL_PATH_FILE=`realpath $FILE`
+            FULL_PATH_FILE=`readlink -f $FILE`
             FILE_NAME=`basename $FILE`
             for TAG in ${TAGS[@]}; do
                 eval "${TAG_CMD[$TAG_OPT]}"

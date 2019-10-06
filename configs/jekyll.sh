@@ -4,7 +4,7 @@
 
 hash jekyll &>/dev/null || return 1
 
-export BASH_CONFIG_JEKYLL_SRC="$(realpath "${BASH_SOURCE[0]}")"
+export BASH_CONFIG_JEKYLL_SRC="$(readlink -f "${BASH_SOURCE[0]}")"
 export BASH_CONFIG_JEKYLL_DIR="$(dirname "$BASH_CONFIG_JEKYLL_SRC")"
 
 jekill() { pkill -f jekyll; }

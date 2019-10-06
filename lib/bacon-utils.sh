@@ -3,7 +3,7 @@
 # Released under the terms of the MIT License.
 
 # shellcheck disable=SC2155
-export BACON_UTILS_ABS_SRC="$(realpath "${BASH_SOURCE[0]}")"
+export BACON_UTILS_ABS_SRC="$(readlink -f "${BASH_SOURCE[0]}")"
 export BACON_UTILS_ABS_DIR="$(dirname "$BACON_UTILS_ABS_SRC")"
 
 # ANSI 8 colors

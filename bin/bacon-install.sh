@@ -5,7 +5,7 @@
 # source guard
 [[ $BACON_INSTALL_SOURCED -eq 1 ]] && return
 declare -r BACON_INSTALL_SOURCED=1
-declare -r BACON_INSTALL_ABS_SRC="$(realpath "${BASH_SOURCE[0]}")"
+declare -r BACON_INSTALL_ABS_SRC="$(readlink -f "${BASH_SOURCE[0]}")"
 declare -r BACON_INSTALL_ABS_DIR="$(dirname "$BACON_INSTALL_ABS_SRC")"
 
 bacon_install() {
