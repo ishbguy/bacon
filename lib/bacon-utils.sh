@@ -46,8 +46,7 @@ BACON_ANSI_COLOR[reset_invert]=27
 BACON_ANSI_COLOR[reset_hidden]=28
 
 bacon_has_map() {
-    local -n map="$1"
-    shift
+    local -n map="$1"; shift
     [[ -n $1 && -n ${map[$1]} ]]
 }
 
@@ -62,11 +61,9 @@ bacon_printc() {
     local color=default
     local format
     if bacon_has_map BACON_ANSI_COLOR "$1"; then
-        color="$1"
-        shift
+        color="$1"; shift
         if bacon_has_map BACON_ANSI_COLOR "$1"; then
-            format="$1"
-            shift
+            format="$1"; shift
         fi
     fi
     local IFS=' '
@@ -132,6 +129,8 @@ bacon_typeof() {
         echo "${BACON_TYPE[${BASH_REMATCH[1]}]}"
     elif declare -F "$1" &>/dev/null; then
         echo "function"
+    elif type -t "$1" &>/dev/null; then
+        type -t "$1"
     else
         return 1
     fi
@@ -163,13 +162,10 @@ bacon_is_exist() {
 bacon_ensure() {
     #  shellcheck disable=SC2015
     [[ -z $BACON_NO_ENSURE ]] || return 0
-    local cmd="$1"
-    shift
+    local cmd="$1"; shift
+    local IFS=' '
     # shellcheck disable=SC2207
-    local -a info=($(
-        IFS=' '
-        caller 0
-    ))
+    local -a info=($(caller 0))
     local info_str="${info[2]}:${info[0]}:${info[1]}"
     if ! (eval "$cmd" &>/dev/null); then
         bacon_die "$info_str: ${FUNCNAME[0]} '$cmd' failed." "$@"

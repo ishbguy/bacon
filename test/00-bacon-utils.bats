@@ -167,10 +167,24 @@ load bacon-helper
     # run bacon_typeof GLOBAL
     # assert_success
     # assert_output "global"
+
+    shopt -s expand_aliases
+    alias typeof="type -t"
+    run bacon_typeof typeof
+    assert_success
+    assert_output "alias"
+    run bacon_typeof while
+    assert_success
+    assert_output "keyword"
+    run bacon_typeof type
+    assert_success
+    assert_output "builtin"
+    run bacon_typeof bash
+    assert_success
+    assert_output "file"
 }
 
 @test "test bacon_is_sourced" {
-    # echo "source $(suitedir)/../lib/$(suitename).sh; bacon_is_sourced && echo yes || echo no" >"$PROJECT_TMP_DIR"/test_is_sourced.sh
     cat <<EOF >"$PROJECT_TMP_DIR"/test_is_sourced.sh
     source $(suitedir)/../lib/$(suitename).sh
     bacon_is_sourced && echo yes || echo no

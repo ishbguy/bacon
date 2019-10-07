@@ -3,22 +3,6 @@
 load bats-helper
 load bacon-helper
 
-@test "test bacon_prompt_color" {
-    run bacon_prompt_color "test"
-    assert_success
-    assert_match "$(printf '%sm' ${BACON_ANSI_COLOR[default]})"
-
-    for color in "${!BACON_ANSI_COLOR[@]}"; do
-        run bacon_prompt_color $color "test"
-        assert_success
-        assert_match "$(printf '%sm' ${BACON_ANSI_COLOR[$color]})"
-    done
-
-    run bacon_prompt_color red bold test
-    assert_success
-    assert_match "$(printf '%sm' "${BACON_ANSI_COLOR[red]};${BACON_ANSI_COLOR[bold]}")"
-}
-
 @test "test bacon_prompt_last_status" {
     local LAST_STATUS=0
     run bacon_prompt_last_status
