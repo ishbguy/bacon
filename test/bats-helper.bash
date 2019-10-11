@@ -19,10 +19,10 @@ teardown() {
 abspath() {
     readlink -f "$1"
 }
-suitedir() {
+suitdir() {
     dirname "$(abspath "$BATS_TEST_FILENAME")"
 }
-suitename() {
+suitname() {
     basename "$BATS_TEST_FILENAME" .bats | sed 's:^[0-9][0-9]-::'
 }
 puts() {

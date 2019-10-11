@@ -48,25 +48,28 @@ load bacon-helper
     assert_success
     assert_match 'DEBUG'
     run bacon_debug test
-    assert_match 'DEBUG: test'
+    assert_match '\[DEBUG] test'
 }
 
-@test "test bacon_msg" {
-    run bacon_msg test
+@test "test bacon_info" {
+    run bacon_info test
     assert_success
     assert_match "$(printf '\x1B\[%sm' ${BACON_ANSI_COLOR[yellow]})"
+    assert_match "INFO"
 }
 
 @test "test bacon_warn" {
     run bacon_warn test
     assert_failure
     assert_match "$(printf '\x1B\[%sm' ${BACON_ANSI_COLOR[red]})"
+    assert_match "WARN"
 }
 
 @test "test bacon_die" {
     run bacon_die test
     assert_failure
     assert_match "$(printf '\x1B\[%sm' ${BACON_ANSI_COLOR[red]})"
+    assert_match "ERROR"
 }
 
 @test "test bacon_defined" {
@@ -186,7 +189,7 @@ load bacon-helper
 
 @test "test bacon_is_sourced" {
     cat <<EOF >"$PROJECT_TMP_DIR"/test_is_sourced.sh
-    source $(suitedir)/../lib/$(suitename).sh
+    source $(suitdir)/../lib/$(suitname).sh
     bacon_is_sourced && echo yes || echo no
 EOF
 
@@ -389,7 +392,7 @@ EOF
 
 @test "test bacon_self" {
     cat <<EOF >"$PROJECT_TMP_DIR/test-bacon-self.sh"
-    source $(suitedir)/../lib/$(suitename).sh
+    source $(suitdir)/../lib/$(suitname).sh
     bacon_self
 EOF
 
@@ -405,30 +408,23 @@ EOF
 @test "test bacon_lib" {
     run bacon_lib
     assert_success
-    assert_output "$(readlink -f $(suitedir)/../lib)"
+    assert_output "$(readlink -f $(suitdir)/../lib)"
 }
 
 @test "test bacon_load" {
-    run eval '[[ -z $BACON_LIB_PATH ]]'
-    assert_success
+    declare -a BACON_LIB_DIR=($(bacon_lib))
 
     run bacon_load
     assert_failure
-    run eval '(bacon_load; [[ -n $BACON_LIB_PATH ]])'
-    assert_success
-    run eval '(bacon_load; echo $BACON_LIB_PATH)'
-    assert_output "$(bacon_lib)"
 
-    run bacon_load "$(suitename)"
+    run bacon_load "$(suitname)"
     assert_success
     run bacon_load no_mod
     assert_failure
 
     local libdir="$PROJECT_TMP_DIR/load-lib"
     mkdir -p "$libdir"
-    local BACON_LIB_PATH="$libdir"
-    run bacon_load "$(suitename)"
-    assert_success
+    BACON_LIB_DIR+=("$libdir")
     echo "hello() { echo hello; }" >"$libdir/hello.sh"
     run eval '(bacon_load hello; hello)'
     assert_success
@@ -436,7 +432,7 @@ EOF
     
     local libdir2="$PROJECT_TMP_DIR/load-lib2"
     mkdir -p "$libdir2"
-    BACON_LIB_PATH="$BACON_LIB_PATH:$libdir2"
+    BACON_LIB_DIR+=("$libdir2")
     echo "world() { echo world; }" >"$libdir2/world.sh"
     run eval '(bacon_load world; world)'
     assert_success

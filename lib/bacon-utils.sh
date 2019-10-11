@@ -6,44 +6,46 @@
 export BACON_UTILS_ABS_SRC="$(readlink -f "${BASH_SOURCE[0]}")"
 export BACON_UTILS_ABS_DIR="$(dirname "$BACON_UTILS_ABS_SRC")"
 
-# ANSI 8 colors
-declare -gA BACON_ANSI_COLOR
-BACON_ANSI_COLOR[black]=30
-BACON_ANSI_COLOR[red]=31
-BACON_ANSI_COLOR[green]=32
-BACON_ANSI_COLOR[yellow]=33
-BACON_ANSI_COLOR[blue]=34
-BACON_ANSI_COLOR[magenta]=35
-BACON_ANSI_COLOR[cyan]=36
-BACON_ANSI_COLOR[white]=37
-BACON_ANSI_COLOR[default]=39
+if ! declare -p BACON_ANSI_COLOR &>/dev/null; then
+    # ANSI 8 colors
+    declare -gA BACON_ANSI_COLOR
+    BACON_ANSI_COLOR[black]=30
+    BACON_ANSI_COLOR[red]=31
+    BACON_ANSI_COLOR[green]=32
+    BACON_ANSI_COLOR[yellow]=33
+    BACON_ANSI_COLOR[blue]=34
+    BACON_ANSI_COLOR[magenta]=35
+    BACON_ANSI_COLOR[cyan]=36
+    BACON_ANSI_COLOR[white]=37
+    BACON_ANSI_COLOR[default]=39
 
-BACON_ANSI_COLOR[bg_black]=40
-BACON_ANSI_COLOR[bg_red]=41
-BACON_ANSI_COLOR[bg_green]=42
-BACON_ANSI_COLOR[bg_yellow]=43
-BACON_ANSI_COLOR[bg_blue]=44
-BACON_ANSI_COLOR[bg_magenta]=45
-BACON_ANSI_COLOR[bg_cyan]=46
-BACON_ANSI_COLOR[bg_white]=47
-BACON_ANSI_COLOR[bg_default]=49
+    BACON_ANSI_COLOR[bg_black]=40
+    BACON_ANSI_COLOR[bg_red]=41
+    BACON_ANSI_COLOR[bg_green]=42
+    BACON_ANSI_COLOR[bg_yellow]=43
+    BACON_ANSI_COLOR[bg_blue]=44
+    BACON_ANSI_COLOR[bg_magenta]=45
+    BACON_ANSI_COLOR[bg_cyan]=46
+    BACON_ANSI_COLOR[bg_white]=47
+    BACON_ANSI_COLOR[bg_default]=49
 
-# ANSI color set
-BACON_ANSI_COLOR[bold]=1
-BACON_ANSI_COLOR[dim]=2
-BACON_ANSI_COLOR[underline]=4
-BACON_ANSI_COLOR[blink]=5
-BACON_ANSI_COLOR[invert]=7
-BACON_ANSI_COLOR[hidden]=8
+    # ANSI color set
+    BACON_ANSI_COLOR[bold]=1
+    BACON_ANSI_COLOR[dim]=2
+    BACON_ANSI_COLOR[underline]=4
+    BACON_ANSI_COLOR[blink]=5
+    BACON_ANSI_COLOR[invert]=7
+    BACON_ANSI_COLOR[hidden]=8
 
-# ANSI color reset
-BACON_ANSI_COLOR[reset]=0
-BACON_ANSI_COLOR[reset_bold]=21
-BACON_ANSI_COLOR[reset_dim]=22
-BACON_ANSI_COLOR[reset_underline]=24
-BACON_ANSI_COLOR[reset_blink]=25
-BACON_ANSI_COLOR[reset_invert]=27
-BACON_ANSI_COLOR[reset_hidden]=28
+    # ANSI color reset
+    BACON_ANSI_COLOR[reset]=0
+    BACON_ANSI_COLOR[reset_bold]=21
+    BACON_ANSI_COLOR[reset_dim]=22
+    BACON_ANSI_COLOR[reset_underline]=24
+    BACON_ANSI_COLOR[reset_blink]=25
+    BACON_ANSI_COLOR[reset_invert]=27
+    BACON_ANSI_COLOR[reset_hidden]=28
+fi
 
 bacon_has_map() {
     local -n map="$1"; shift
@@ -55,7 +57,7 @@ bacon_set_color() {
     bacon_has_map BACON_ANSI_COLOR "$1" && color="${BACON_ANSI_COLOR[$1]}"
     printf '\x1B[%sm' "$(bacon_has_map BACON_ANSI_COLOR "$2" &&
         echo "$color;${BACON_ANSI_COLOR[$2]}" || echo "$color")"
-}
+    }
 
 bacon_printc() {
     local color=default
@@ -76,26 +78,24 @@ bacon_puts() {
 }
 
 bacon_debug() {
-    local IFS=' '
-    [[ -z $BACON_DEBUG ]] || bacon_puts "DEBUG: $*"
+    [[ -z $BACON_DEBUG ]] || bacon_puts "[DEBUG]" "$@" >&2
 }
 
-bacon_msg() {
-    bacon_printc yellow "$@" >&2
+bacon_info() {
+    bacon_printc yellow  "[INFO]" "$@" >&2
 }
 
 bacon_warn() {
-    bacon_printc red "$@" >&2
+    bacon_printc red "[WARN]" "$@" >&2
     return 1
 }
 
 bacon_die() {
-    bacon_printc red "$@" >&2
+    bacon_printc red "[ERROR]" "$@" >&2
     exit 1
 }
 
 bacon_defined() {
-    # [[ -v $1 ]]
     declare -p "$1" &>/dev/null
 }
 
@@ -129,6 +129,7 @@ bacon_typeof() {
         echo "${BACON_TYPE[${BASH_REMATCH[1]}]}"
     elif declare -F "$1" &>/dev/null; then
         echo "function"
+    # check for alias, keyword, builtin and file|cmd
     elif type -t "$1" &>/dev/null; then
         type -t "$1"
     else
@@ -240,25 +241,20 @@ bacon_lib() {
 }
 
 bacon_load() {
-    # shellcheck disable=SC2155
-    [[ -n $BACON_LIB_PATH ]] || export BACON_LIB_PATH="$(bacon_lib)"
-    # shellcheck disable=SC2155
-    [[ $BACON_LIB_PATH =~ $(bacon_lib) ]] || export BACON_LIB_PATH="$(bacon_lib):$BACON_LIB_PATH"
-    bacon_defined BACON_LOADED || declare -gA BACON_LOADED=()
-
     [[ $# == 1 && -n $1 ]] || return 1
+    # shellcheck disable=SC2155
+    bacon_defined __BACON_LOADED_FILE || declare -gA __BACON_LOADED_FILE=()
 
-    local lib="$1"
-    while read -r -d ':' dir; do
+    for dir in "${BACON_LIB_DIR[@]}"; do
         # shellcheck disable=SC1090
-        if [[ -f $dir/$lib.sh ]]; then
-            if ! bacon_has_map BACON_LOADED "$lib"; then
+        if [[ -f $dir/$1.sh ]]; then
+            if ! bacon_has_map __BACON_LOADED_FILE "$1"; then
                 # shellcheck disable=SC1090,SC2034
-                source "$dir/$lib.sh" && BACON_LOADED[$lib]="$dir/$lib.sh"
+                source "$dir/$1.sh" && __BACON_LOADED_FILE[$1]="$dir/$1.sh"
                 return 0
             fi
         fi
-    done <<<"$BACON_LIB_PATH:"
+    done
     return 1
 }
 
@@ -267,7 +263,7 @@ bacon_export() {
     local -u ns="$1"
     local src="$(bacon_abs_path "${BASH_SOURCE[1]}")"
     local dir="$(dirname "$src")"
-    
+
     eval "export BACON_EXPORT_${ns}_ABS_SRC=$src"
     eval "export BACON_EXPORT_${ns}_ABS_DIR=$dir"
 }
