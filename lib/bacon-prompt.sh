@@ -1,7 +1,7 @@
 # Copyright (c) 2019 Herbert Shen <ishbguy@hotmail.com> All Rights Reserved.
 # Released under the terms of the MIT License.
 
-bacon_export prompt
+bacon_module_export prompt
 
 declare -ga BACON_PROMPT_PS1_LAYOUT=()
 declare -ga BACON_PROMPT_COUNTERS=()

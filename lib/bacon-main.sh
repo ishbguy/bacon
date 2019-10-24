@@ -5,13 +5,13 @@
 [[ $- == *i* ]] || return 0
 
 # shellcheck disable=SC2155
-export BACON_MAIN_ABS_SRC="$(readlink -f "${BASH_SOURCE[0]}")"
+declare -r BACON_MAIN_ABS_SRC="$(readlink -f "${BASH_SOURCE[0]}")"
 # shellcheck disable=SC2155
-export BACON_MAIN_ABS_DIR="$(dirname "$BACON_MAIN_ABS_SRC")"
+declare -r BACON_MAIN_ABS_DIR="$(dirname "$BACON_MAIN_ABS_SRC")"
 
-bacon_load_unit() {
-    for unit in "$@"; do
-        bacon_load "$unit" || true
+bacon_init() {
+    for c in "$@"; do
+        bacon_load "$c" || true
     done
 }
 
@@ -20,22 +20,27 @@ bacon_load_mod() {
         [[ -d $d ]] || continue
         for m in "$d"/*.sh; do
             # shellcheck disable=SC1090,SC2015
-            [[ -f $m ]] && source "$m" || true
+            # [[ -f $m ]] && source "$m" || true
+            if [[ -f $m ]]; then
+                bacon_module_start "$m"
+                source "$m" || true
+                bacon_module_end
+            fi
         done
     done
 }
 
 bacon_main_prelude() {
-    declare -ga BACON_UNIT=("bacon-precmd" "bacon-prompt")
+    declare -ga BACON_CORE=("bacon-module" "bacon-precmd" "bacon-prompt")
     declare -ga BACON_LIB_DIR=("$BACON_MAIN_ABS_DIR")
     declare -ga BACON_MOD_BUILTIN_DIR=("$BACON_MAIN_ABS_DIR/../configs")
     declare -ga BACON_MOD_USER_DIR=("$HOME/.bacon" "$HOME/.bash-configs")
+    declare -g  BACON_NO_ENSURE=yes
 }
 
 bacon_main() {
-    bacon_export main
     bacon_main_prelude
-    bacon_load_unit "${BACON_UNIT[@]}"
+    bacon_init "${BACON_CORE[@]}"
     bacon_load_mod "${BACON_MOD_BUILTIN_DIR[@]}"
     bacon_load_mod "${BACON_MOD_USER_DIR[@]}"
 }

@@ -2,7 +2,7 @@
 # Copyright (c) 2019 Herbert Shen <ishbguy@hotmail.com> All Rights Reserved.
 # Released under the terms of the MIT License.
 
-bacon_export precmd
+bacon_module_export precmd
 
 declare -ga BACON_PRECMDS=('export LAST_STATUS=$?')
 bacon_precmd() {
