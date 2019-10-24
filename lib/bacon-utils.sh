@@ -96,14 +96,20 @@ bacon_die() {
 }
 
 bacon_defined() {
+    local usage="Usage: ${FUNCNAME[0]} <var-name>"
+    bacon_ensure "[[ $# == 1 && -n $1 ]]" "$usage"
     declare -p "$1" &>/dev/null
 }
 
 bacon_definedf() {
+    local usage="Usage: ${FUNCNAME[0]} <func-name>"
+    bacon_ensure "[[ $# == 1 && -n $1 ]]" "$usage"
     declare -f "$1" &>/dev/null
 }
 
 bacon_typeof() {
+    local usage="Usage: ${FUNCNAME[0]} <string>"
+    bacon_ensure "[[ $# == 1 && -n $1 ]]" "$usage"
     # shellcheck disable=SC2034
     if ! bacon_defined BACON_TYPE; then
         declare -gA BACON_TYPE=()
@@ -119,7 +125,7 @@ bacon_typeof() {
         # BACON_TYPE[r]="readonly"
         # BACON_TYPE[g]="global"
     fi
-    [[ $# == 1 && -n $1 ]] || return 1
+    # [[ $# == 1 && -n $1 ]] || return 1
     if declare -p "$1" &>/dev/null; then
         local IFS=' '
         # shellcheck disable=SC2207
@@ -129,7 +135,7 @@ bacon_typeof() {
         echo "${BACON_TYPE[${BASH_REMATCH[1]}]}"
     elif declare -F "$1" &>/dev/null; then
         echo "function"
-    # check for alias, keyword, builtin and file|cmd
+        # check for alias, keyword, builtin and file|cmd
     elif type -t "$1" &>/dev/null; then
         type -t "$1"
     else
@@ -258,14 +264,67 @@ bacon_load() {
     return 1
 }
 
-bacon_export() {
-    [[ $# == 1 && -n $1 ]] || return 1
-    local -u ns="$1"
-    local src="$(bacon_abs_path "${BASH_SOURCE[1]}")"
-    local dir="$(dirname "$src")"
+bacon_push() {
+    local usage="Usage: ${FUNCNAME[0]} <array> [args..]"
+    bacon_ensure "(($# >= 2))" "$usage"
+    bacon_ensure "[[ $(bacon_typeof "$1") == array ]]" "$usage"
 
-    eval "export BACON_EXPORT_${ns}_ABS_SRC=$src"
-    eval "export BACON_EXPORT_${ns}_ABS_DIR=$dir"
+    local -n __array=$1; shift
+    __array+=("$@")
+}
+
+bacon_pop() {
+    local usage="Usage: ${FUNCNAME[0]} <array>"
+    bacon_ensure "(($# == 1))" "$usage"
+    bacon_ensure "[[ $(bacon_typeof "$1") == array ]]" "$usage"
+
+    local -n __array=$1; shift
+    local last=""
+    [[ ${#__array[@]} == 0 ]] && return 1
+    last="${__array[$((${#__array[@]}-1))]}"
+    __array=("${__array[@]:0:$((${#__array[@]}-1))}")
+    echo "$last"
+}
+
+bacon_shift() {
+    local usage="Usage: ${FUNCNAME[0]} <array>"
+    bacon_ensure "(($# == 1))" "$usage"
+    bacon_ensure "[[ $(bacon_typeof "$1") == array ]]" "$usage"
+
+    local -n __array=$1; shift
+    local last=""
+    [[ ${#__array[@]} == 0 ]] && return 1
+    last="${__array[0]}"
+    __array=("${__array[@]:1}")
+    echo "$last"
+}
+
+bacon_filter() {
+    local usage="Usage: ${FUNCNAME[0]} <out-array> <pattern> <args...>"
+    bacon_ensure "(($# >= 2))" "$usage"
+    bacon_ensure "[[ $(bacon_typeof "$1") == array ]]" "$usage"
+
+    local -n __array="$1"
+    local p="$2"
+    shift 2
+    for arg in "$@"; do
+        [[ $arg =~ $p ]] && __array+=("$arg") || true
+    done
+}
+
+bacon_map() {
+    local usage="Usage: ${FUNCNAME[0]} <out> <func> <args...>"
+    bacon_ensure "(($# >= 2))" "$usage"
+    bacon_ensure "[[ $(bacon_typeof "$1") == array ]]" "$usage"
+    bacon_ensure "[[ $(bacon_typeof "$2") == function ]]" "$usage"
+
+    local -n __array="$1"
+    local func="$2"
+    shift 2
+    __array+=("$@")
+    for i in "${__array[@]}"; do
+        "$func" "__array[$i]"
+    done
 }
 
 # vim:set ft=sh ts=4 sw=4:

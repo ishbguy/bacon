@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
 # shellcheck disable=SC1090
-source "$(suitdir)"/../lib/bacon-utils.sh
-source "$(suitdir)"/../lib/bacon-precmd.sh
-source "$(suitdir)"/../lib/bacon-prompt.sh
+BACON_LIB="$(abspath "$(suitdir)/../lib")"
+source "${BACON_LIB}"/bacon-utils.sh
+source "${BACON_LIB}"/bacon-module.sh
+source "${BACON_LIB}"/bacon-precmd.sh
+source "${BACON_LIB}"/bacon-prompt.sh

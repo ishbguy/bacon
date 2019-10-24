@@ -116,14 +116,14 @@ load bacon-helper
 @test "test bacon_typeof" {
     run bacon_typeof
     assert_failure
-    assert_output ""
+    assert_match "ERROR"
     run bacon_typeof NOT_DEFINED
     assert_failure
     assert_output ""
     local var=""
     run bacon_typeof var NOTVAR
     assert_failure
-    assert_output ""
+    assert_match "ERROR"
 
     local DEFINED=""
     run bacon_typeof DEFINED
@@ -446,17 +446,108 @@ EOF
     assert_match '^1$'
 }
 
-@test "test bacon_export" {
-    run bacon_export
+@test "test bacon_push" {
+    local array=()
+    run bacon_push
+    assert_failure
+    run bacon_push array
     assert_failure
 
-    run bacon_export test
+    run bacon_push array one
     assert_success
-    run bacon_export one two
+    run eval '(bacon_push array one; echo "${array[@]}")'
+    assert_output "one"
+    run eval '(bacon_push array one two; echo "${array[@]}")'
+    assert_output "one two"
+}
+
+@test "test bacon_pop" {
+    local array=()
+    run bacon_pop
     assert_failure
-    
-    run eval '(bacon_export TEST; [[ -n $BACON_EXPORT_TEST_ABS_SRC && -n $BACON_EXPORT_TEST_ABS_DIR ]])'
+    assert_match "ERROR"
+    run bacon_pop array
+    assert_failure
+    run bacon_pop array NOTVAR
+    assert_failure
+    assert_match "ERROR"
+
+    array+=(one)
+    run eval '(bacon_pop array &>/dev/null && echo "${array[@]}")'
     assert_success
-    run eval '(bacon_export test; [[ -n $BACON_EXPORT_TEST_ABS_SRC && -n $BACON_EXPORT_TEST_ABS_DIR ]])'
+    assert_output ""
+    array+=(two)
+    run eval '(bacon_pop array &>/dev/null && echo "${array[@]}")'
     assert_success
+    assert_output "one"
+    run eval '(bacon_pop array)'
+    assert_success
+    assert_output "two"
+}
+
+@test "test bacon_shift" {
+    local array=()
+    run bacon_shift
+    assert_failure
+    assert_match "ERROR"
+    run bacon_shift array
+    assert_failure
+    run bacon_shift array NOTVAR
+    assert_failure
+    assert_match "ERROR"
+
+    array+=(one)
+    run eval '(bacon_shift array &>/dev/null && echo "${array[@]}")'
+    assert_success
+    assert_output ""
+    array+=(two)
+    run eval '(bacon_shift array &>/dev/null && echo "${array[@]}")'
+    assert_success
+    assert_output "two"
+    run eval '(bacon_shift array)'
+    assert_success
+    assert_output "one"
+}
+
+@test "test bacon_filter" {
+    local array=()
+    local out=()
+    run bacon_filter
+    assert_failure
+    run bacon_filter a
+    assert_failure
+
+    array+=(a -a A a-A b -b B b-B)
+    run bacon_filter out a
+    assert_success
+    run eval '(bacon_filter out a "${array[@]}" && echo "${out[@]}")'
+    assert_success
+    assert_output "a -a a-A"
+    run eval '(bacon_filter out "^-" "${array[@]}" && echo "${out[@]}")'
+    assert_success
+    assert_output "-a -b"
+    run eval '(bacon_filter out ".*-" "${array[@]}" && echo "${out[@]}")'
+    assert_success
+    assert_output "-a a-A -b b-B"
+    run eval '(bacon_filter out ".*-[AB]$" "${array[@]}" && echo "${out[@]}")'
+    assert_success
+    assert_output "a-A b-B"
+}
+
+@test "test bacon_map" {
+    local array=({0..9})
+    local out=()
+    incr() { eval "(($1++))"; }
+    run bacon_map
+    assert_failure
+    run bacon_map NOTARRAY
+    assert_failure
+    run bacon_map out NOTFUNC
+    assert_failure
+
+    run bacon_map out incr
+    assert_success
+    run eval '(bacon_map out incr {0..9} && echo "${out[@]}")'
+    assert_success
+    assert_output "$(echo {1..10})"
 }
