@@ -20,9 +20,9 @@ bacon_load_module() {
         local BACON_LIB_DIR=("$d")
         for m in "$d"/*.sh; do
             local mod="${m##*/}"; mod="${mod%.sh}"
-            bacon_module_start "$mod"
+            bacon_cap_start "$mod"
             bacon_load "${m##*/}"
-            bacon_module_end
+            bacon_cap_end
         done
     done
 }
@@ -42,6 +42,7 @@ bacon_configure_defaults() {
     )
     BACON_PROMPT_COUNTERS+=('dirs -p | tail -n +2 | wc -l')
     BACON_PROMPT_COUNTERS+=('jobs -p | wc -l')
+    BACON_CAP_OFF=yes
 }
 
 bacon_main() {
