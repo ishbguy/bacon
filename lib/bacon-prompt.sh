@@ -1,7 +1,7 @@
 # Copyright (c) 2019 Herbert Shen <ishbguy@hotmail.com> All Rights Reserved.
 # Released under the terms of the MIT License.
 
-bacon_module_export prompt
+bacon_export prompt
 
 declare -ga BACON_PROMPT_PS1_LAYOUT=()
 declare -ga BACON_PROMPT_COUNTERS=()
@@ -22,8 +22,6 @@ bacon_prompt_location() {
     bacon_printc "${BACON_PROMPT_COLOR[location]:-blue}" "${BACON_PROMPT_CHARS[location]:-[\u@\h:\W]}"
 }
 
-BACON_PROMPT_COUNTERS+=('dirs -p | tail -n +2 | wc -l')
-BACON_PROMPT_COUNTERS+=('jobs -p | wc -l')
 bacon_prompt_counter() {
     local -A counters
     local str=''
@@ -46,12 +44,6 @@ bacon_prompt_dollar() {
     bacon_printc "${BACON_PROMPT_COLOR[dollar]:-blue}" "${BACON_PROMPT_CHARS[dollar]:-\$ }"
 }
 
-BACON_PROMPT_PS1_LAYOUT=(
-    bacon_prompt_last_status
-    bacon_prompt_time
-    bacon_prompt_location
-    bacon_prompt_counter
-)
 bacon_prompt_PS1() {
     PS1=
     for layout in "${BACON_PROMPT_PS1_LAYOUT[@]}"; do
@@ -60,8 +52,6 @@ bacon_prompt_PS1() {
     PS1+="$(bacon_prompt_dollar)"
     export PS1
 }
-
-BACON_PRECMDS+=('bacon_prompt_PS1')
 
 export PS4='+ $(basename ${0##+(-)}) line $LINENO: '
 

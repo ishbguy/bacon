@@ -2,9 +2,13 @@
 # Copyright (c) 2018 Herbert Shen <ishbguy@hotmail.com> All Rights Reserved.
 # Released under the terms of the MIT License.
 
-# shellcheck disable=SC2155
 export BACON_UTILS_ABS_SRC="$(readlink -f "${BASH_SOURCE[0]}")"
 export BACON_UTILS_ABS_DIR="$(dirname "$BACON_UTILS_ABS_SRC")"
+
+# global variable interfaces
+declare -g  BACON_NO_ENSURE=""
+declare -g  BACON_DEBUG=""
+declare -ga BACON_LIB_DIR=()
 
 if ! declare -p BACON_ANSI_COLOR &>/dev/null; then
     # ANSI 8 colors
@@ -325,6 +329,19 @@ bacon_map() {
     for i in "${__array[@]}"; do
         "$func" "__array[$i]"
     done
+}
+
+# alias @export='bacon_export || return 0'
+bacon_export() {
+    local src="$(bacon_abs_path "${BASH_SOURCE[1]}")"
+    local dir="$(dirname "$src")"
+    local -u ns="${1:-$(bacon_encode_base "$src")}"
+
+    # source export guard
+    # eval "[[ -z \$BACON_SOURCE_${ns}_ABS_SRC ]]" || return 1
+
+    eval "export BACON_SOURCE_${ns}_ABS_SRC=$src"
+    eval "export BACON_SOURCE_${ns}_ABS_DIR=$dir"
 }
 
 # vim:set ft=sh ts=4 sw=4:

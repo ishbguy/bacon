@@ -3,7 +3,7 @@
 load bats-helper
 load bacon-helper
 
-@test "test bacon_has_map" {
+@test "bacon_has_map" {
     run bacon_has_map NO_MAP
     assert_failure
     assert_output ""
@@ -15,7 +15,7 @@ load bacon-helper
     assert_output ""
 }
 
-@test "test bacon_printc" {
+@test "bacon_printc" {
     run bacon_printc "test"
     assert_success
     assert_match "$(printf '\x1B\[%sm' ${BACON_ANSI_COLOR[default]})"
@@ -31,14 +31,14 @@ load bacon-helper
     assert_match "$(printf '\x1B\[%sm' "${BACON_ANSI_COLOR[red]};${BACON_ANSI_COLOR[bold]}")"
 }
 
-@test "test bacon_puts" {
+@test "bacon_puts" {
     run bacon_puts
     assert_output ""
     run bacon_puts test
     assert_output "test"
 }
 
-@test "test bacon_debug" {
+@test "bacon_debug" {
     run bacon_debug
     assert_success
     assert_output ""
@@ -51,28 +51,28 @@ load bacon-helper
     assert_match '\[DEBUG] test'
 }
 
-@test "test bacon_info" {
+@test "bacon_info" {
     run bacon_info test
     assert_success
     assert_match "$(printf '\x1B\[%sm' ${BACON_ANSI_COLOR[yellow]})"
     assert_match "INFO"
 }
 
-@test "test bacon_warn" {
+@test "bacon_warn" {
     run bacon_warn test
     assert_failure
     assert_match "$(printf '\x1B\[%sm' ${BACON_ANSI_COLOR[red]})"
     assert_match "WARN"
 }
 
-@test "test bacon_die" {
+@test "bacon_die" {
     run bacon_die test
     assert_failure
     assert_match "$(printf '\x1B\[%sm' ${BACON_ANSI_COLOR[red]})"
     assert_match "ERROR"
 }
 
-@test "test bacon_defined" {
+@test "bacon_defined" {
     run bacon_defined NOT_DEFINED
     assert_failure
     local DEFINED=""
@@ -104,7 +104,7 @@ load bacon-helper
     assert_success
 }
 
-@test "test bacon_definedf" {
+@test "bacon_definedf" {
     run bacon_definedf not_func
     assert_failure
 
@@ -113,7 +113,7 @@ load bacon-helper
     assert_success
 }
 
-@test "test bacon_typeof" {
+@test "bacon_typeof" {
     run bacon_typeof
     assert_failure
     assert_match "ERROR"
@@ -187,7 +187,7 @@ load bacon-helper
     assert_output "file"
 }
 
-@test "test bacon_is_sourced" {
+@test "bacon_is_sourced" {
     cat <<EOF >"$PROJECT_TMP_DIR"/test_is_sourced.sh
     source $(suitdir)/../lib/$(suitname).sh
     bacon_is_sourced && echo yes || echo no
@@ -202,7 +202,7 @@ EOF
     assert_output no
 }
 
-@test "test bacon_is_array" {
+@test "bacon_is_array" {
     local var=""
     run bacon_is_array var
     assert_failure
@@ -216,7 +216,7 @@ EOF
     assert_failure
 }
 
-@test "test bacon_is_map" {
+@test "bacon_is_map" {
     local var=""
     run bacon_is_map var
     assert_failure
@@ -230,14 +230,14 @@ EOF
     assert_success
 }
 
-@test "test bacon_has_cmd" {
+@test "bacon_has_cmd" {
     run bacon_has_cmd cmd_not_exist
     assert_failure
     run bacon_has_cmd bash
     assert_success
 }
 
-@test "test bacon_is_exist" {
+@test "bacon_is_exist" {
     run bacon_is_exist
     assert_failure
     assert_output ""
@@ -256,7 +256,7 @@ EOF
     assert_output ""
 }
 
-@test "test bacon_ensure" {
+@test "bacon_ensure" {
     run bacon_ensure "[[ -d $PROJECT_TMP_DIR ]]" "$PROJECT_TMP_DIR is not a dir"
     assert_success
 
@@ -269,7 +269,7 @@ EOF
     assert_success
 }
 
-@test "test bacon_date_cmp" {
+@test "bacon_date_cmp" {
     run bacon_date_cmp '2019-10-01 10:00:00' '2019-10-01 10:00:00'
     assert_success
     assert_output 0
@@ -285,7 +285,7 @@ EOF
     assert_success
 }
 
-@test "test bacon_pargs" {
+@test "bacon_pargs" {
     local -A opt=()
     local -A arg=()
     run bacon_pargs opt arg 'v'
@@ -310,7 +310,7 @@ EOF
     assert_failure
 }
 
-@test "test bacon_require_base" {
+@test "bacon_require_base" {
     is_exist() { [[ -e $1 ]]; }
     run bacon_require_base is_exist "file does not exist" xxx
     assert_failure
@@ -322,7 +322,7 @@ EOF
     assert_success
 }
 
-@test "test bacon_require_var" {
+@test "bacon_require_var" {
     local var=''
     run bacon_require_var var
     assert_success
@@ -334,7 +334,7 @@ EOF
     assert_match "no_var1.*no_var2"
 }
 
-@test "test bacon_require_func" {
+@test "bacon_require_func" {
     run bacon_require_func bacon_require_func
     assert_success
     run bacon_require_func no_func
@@ -345,7 +345,7 @@ EOF
     assert_match "no_func1.*no_func2"
 }
 
-@test "test bacon_require_cmd" {
+@test "bacon_require_cmd" {
     run bacon_require_cmd bash
     assert_success
     run bacon_require_cmd cmd_not_exist
@@ -356,7 +356,7 @@ EOF
     assert_match "You need to install cmds: ONE.*TWO."
 }
 
-@test "test bacon_require" {
+@test "bacon_require" {
     run bacon_require NA
     assert_failure
     assert_match "No such files or dirs: NA."
@@ -374,7 +374,7 @@ EOF
     assert_match "No such files or dirs: $PROJECT_TMP_DIR/N."
 }
 
-@test "test bacon_abs_path" {
+@test "bacon_abs_path" {
     run bacon_abs_path "$PROJECT_TMP_DIR/xxxx"
     assert_success
     assert_output "$PROJECT_TMP_DIR/xxxx"
@@ -390,7 +390,7 @@ EOF
     assert_output "$PROJECT_TMP_DIR/real-file"
 }
 
-@test "test bacon_self" {
+@test "bacon_self" {
     cat <<EOF >"$PROJECT_TMP_DIR/test-bacon-self.sh"
     source $(suitdir)/../lib/$(suitname).sh
     bacon_self
@@ -405,13 +405,13 @@ EOF
     assert_match "$PROJECT_TMP_DIR/test-bacon-self.sh"
 }
 
-@test "test bacon_lib" {
+@test "bacon_lib" {
     run bacon_lib
     assert_success
     assert_output "$(readlink -f $(suitdir)/../lib)"
 }
 
-@test "test bacon_load" {
+@test "bacon_load" {
     declare -a BACON_LIB_DIR=($(bacon_lib))
 
     run bacon_load
@@ -446,7 +446,7 @@ EOF
     assert_match '^1$'
 }
 
-@test "test bacon_push" {
+@test "bacon_push" {
     local array=()
     run bacon_push
     assert_failure
@@ -461,7 +461,7 @@ EOF
     assert_output "one two"
 }
 
-@test "test bacon_pop" {
+@test "bacon_pop" {
     local array=()
     run bacon_pop
     assert_failure
@@ -485,7 +485,7 @@ EOF
     assert_output "two"
 }
 
-@test "test bacon_shift" {
+@test "bacon_shift" {
     local array=()
     run bacon_shift
     assert_failure
@@ -509,7 +509,7 @@ EOF
     assert_output "one"
 }
 
-@test "test bacon_filter" {
+@test "bacon_filter" {
     local array=()
     local out=()
     run bacon_filter
@@ -534,7 +534,7 @@ EOF
     assert_output "a-A b-B"
 }
 
-@test "test bacon_map" {
+@test "bacon_map" {
     local array=({0..9})
     local out=()
     incr() { eval "(($1++))"; }
@@ -550,4 +550,18 @@ EOF
     run eval '(bacon_map out incr {0..9} && echo "${out[@]}")'
     assert_success
     assert_output "$(echo {1..10})"
+}
+
+@test "bacon_export" {
+    run eval '(bacon_export && [[ -n $BACON_SOURCE_BATS_EXEC_TEST_ABS_SRC ]] && echo "${BACON_SOURCE_BATS_EXEC_TEST_ABS_SRC}")'
+    assert_match "bats-exec-test$"
+    run bacon_export test
+    assert_success
+    run bacon_export one two
+    assert_success
+
+    run eval '(bacon_export TEST; [[ -n $BACON_SOURCE_TEST_ABS_SRC && -n $BACON_SOURCE_TEST_ABS_DIR ]])'
+    assert_success
+    run eval '(bacon_export test; [[ -n $BACON_SOURCE_TEST_ABS_SRC && -n $BACON_SOURCE_TEST_ABS_DIR ]])'
+    assert_success
 }

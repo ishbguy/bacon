@@ -3,7 +3,7 @@
 load bats-helper
 load bacon-helper
 
-@test "test bacon_prompt_last_status" {
+@test "bacon_prompt_last_status" {
     local LAST_STATUS=0
     run bacon_prompt_last_status
     assert_match "$(printf '%sm' "${BACON_ANSI_COLOR[green]}")"
@@ -29,7 +29,7 @@ load bacon-helper
     assert_match '@'
 }
 
-@test "test bacon_prompt_time" {
+@test "bacon_prompt_time" {
     run bacon_prompt_time
     assert_match "$(printf '%sm' "${BACON_ANSI_COLOR[green]}")"
     assert_match 'A'
@@ -45,7 +45,7 @@ load bacon-helper
     assert_match 'B'
 }
 
-@test "test bacon_prompt_location" {
+@test "bacon_prompt_location" {
     run bacon_prompt_location
     assert_match "$(printf '%sm' "${BACON_ANSI_COLOR[blue]}")"
     assert_match 'u.*h.*W'
@@ -61,7 +61,7 @@ load bacon-helper
     assert_match 'XXXXXX'
 }
 
-@test "test bacon_prompt_counter" {
+@test "bacon_prompt_counter" {
     local BACON_PROMPT_COUNTERS=()
     run bacon_prompt_counter
     assert_output ''
@@ -83,7 +83,7 @@ load bacon-helper
     assert_match "$(printf '%sm' "${BACON_ANSI_COLOR[black]}")"
 }
 
-@test "test bacon_prompt_dollar" {
+@test "bacon_prompt_dollar" {
     run bacon_prompt_dollar
     assert_match "$(printf '%sm' "${BACON_ANSI_COLOR[blue]}")"
     assert_match '\$'
@@ -99,7 +99,7 @@ load bacon-helper
     assert_match 'D'
 }
 
-@test "test bacon_prompt_PS1" {
+@test "bacon_prompt_PS1" {
     local BACON_PROMPT_PS1_LAYOUT=()
     run eval bacon_prompt_PS1 '&&' '[[ $PS1 =~ \$ ]]'
     assert_success

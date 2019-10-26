@@ -3,7 +3,7 @@
 load bats-helper
 load bacon-helper
 
-@test "test bacon_precmd" {
+@test "bacon_precmd" {
     BACON_PRECMDS=()
     run bacon_precmd
     assert_success
