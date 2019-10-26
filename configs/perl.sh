@@ -4,8 +4,7 @@
 
 hash perl &>/dev/null || return 1
 
-export BASH_CONFIG_PERL_SRC="$(readlink -f "${BASH_SOURCE[0]}")"
-export BASH_CONFIG_PERL_DIR="$(dirname "$BASH_CONFIG_PERL_SRC")"
+bacon_export perl
 
 export PATH="$HOME/perl5/bin${PATH:+:${PATH}}"
 

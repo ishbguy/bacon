@@ -2,8 +2,7 @@
 # Copyright (c) 2018 Herbert Shen <ishbguy@hotmail.com> All Rights Reserved.
 # Released under the terms of the MIT License.
 
-export BASH_CONFIGS_FUNC_ABS_SRC="$(readlink -f "${BASH_SOURCE[0]}")"
-export BASH_CONFIGS_FUNC_ABS_DIR="$(dirname "$BASH_CONFIGS_FUNC_ABS_SRC")"
+bacon_export func
 
 ################################################################################
 # shorthand-functions

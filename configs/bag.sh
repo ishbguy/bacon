@@ -4,10 +4,9 @@
 
 hash git &>/dev/null || return 1
 
-export BASH_CONFIG_BAG_SRC="$(readlink -f "${BASH_SOURCE[0]}")"
-export BASH_CONFIG_BAG_DIR="$(dirname "$BASH_CONFIG_BAG_SRC")"
+bacon_export bag
 
-export PROJECTS_DIR="$(readlink -f "$BASH_CONFIG_BAG_DIR/../..")"
+export PROJECTS_DIR="$(readlink -f "$BACON_SOURCE_BAG_ABS_DIR/../..")"
 export BAG_REPO_DIR="$PROJECTS_DIR/bag"
 export BAGS_DIR="$PROJECTS_DIR/bags"
 

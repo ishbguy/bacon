@@ -4,8 +4,7 @@
 
 hash git &>/dev/null || return 1
 
-export BASH_CONFIG_GIT_SRC="$(readlink -f "${BASH_SOURCE[0]}")"
-export BASH_CONFIG_GIT_DIR="$(dirname "$BASH_CONFIG_GIT_SRC")"
+bacon_export git
 
 #alias for git
 alias gadd='git add'

@@ -4,8 +4,7 @@
 
 hash ruby &>/dev/null || return 1
 
-export BASH_CONFIG_RUBY_SRC="$(readlink -f "${BASH_SOURCE[0]}")"
-export BASH_CONFIG_RUBY_DIR="$(dirname "$BASH_CONFIG_RUBY_SRC")"
+bacon_export ruby
 
 export RUBY_BIN="$HOME/.gem/ruby/2.5.0/bin"
 export PATH=$PATH:$RUBY_BIN

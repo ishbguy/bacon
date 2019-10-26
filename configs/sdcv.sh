@@ -4,8 +4,7 @@
 
 hash sdcv &>/dev/null || return 1
 
-export BASH_CONFIG_SDCV_SRC="$(readlink -f "${BASH_SOURCE[0]}")"
-export BASH_CONFIG_SDCV_DIR="$(dirname "$BASH_CONFIG_SDCV_SRC")"
+bacon_export sdcv
 
 # alias for stardict sdcv
 alias dict-oxford='sdcv -c -u oxford'

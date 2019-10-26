@@ -4,8 +4,7 @@
 
 hash lynx &>/dev/null || return 1
 
-export BASH_CONFIG_LYNX_SRC="$(readlink -f "${BASH_SOURCE[0]}")"
-export BASH_CONFIG_LYNX_DIR="$(dirname "$BASH_CONFIG_LYNX_SRC")"
+bacon_export lynx
 
 lydump() { lynx -dump -display_charset="${2:-utf-8}" "$1"; }
 

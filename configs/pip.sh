@@ -4,8 +4,7 @@
 
 hash pip &>/dev/null || return 1
 
-export BASH_CONFIG_PIP_SRC="$(readlink -f "${BASH_SOURCE[0]}")"
-export BASH_CONFIG_PIP_DIR="$(dirname "$BASH_CONFIG_PIP_SRC")"
+bacon_export pip
 
 pip_upgrade() {
     for pkg in $(pip list --outdate --format legacy | awk '{print $1}'); do

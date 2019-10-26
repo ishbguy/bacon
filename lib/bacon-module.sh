@@ -2,8 +2,7 @@
 # Copyright (c) 2019 Herbert Shen <ishbguy@hotmail.com> All Rights Reserved.
 # Released under the terms of the MIT License.
 
-export BACON_MODULE_ABS_SRC="$(bacon_abs_path "${BASH_SOURCE[0]}")"
-export BACON_MODULE_ABS_DIR="$(dirname "$BACON_MODULE_ABS_SRC")"
+bacon_export module
 
 declare -g  BACON_CAP_OFF=''
 declare -gA BACON_MODULE=()

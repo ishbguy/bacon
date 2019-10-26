@@ -4,8 +4,7 @@
 
 hash pacman &>/dev/null || return 1
 
-export BASH_CONFIG_PACMAN_SRC="$(readlink -f "${BASH_SOURCE[0]}")"
-export BASH_CONFIG_PACMAN_DIR="$(dirname "$BASH_CONFIG_PACMAN_SRC")"
+bacon_export pacman
 
 alias pacman='pacman --color=auto'
 

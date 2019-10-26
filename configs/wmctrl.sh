@@ -4,8 +4,7 @@
 
 hash wmctrl &>/dev/null || return 1
 
-export BASH_CONFIG_WMCTRL_SRC="$(readlink -f "${BASH_SOURCE[0]}")"
-export BASH_CONFIG_WMCTRL_DIR="$(dirname "$BASH_CONFIG_WMCTRL_SRC")"
+bacon_export wmctrl
 
 alias fullscreen='wmctrl -i -r $WINID -b toggle,fullscreen'
 

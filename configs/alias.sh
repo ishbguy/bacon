@@ -2,8 +2,7 @@
 # Copyright (c) 2018 Herbert Shen <ishbguy@hotmail.com> All Rights Reserved.
 # Released under the terms of the MIT License.
 
-export BASH_CONFIG_ALIAS_SRC="$(readlink -f "${BASH_SOURCE[0]}")"
-export BASH_CONFIG_ALIAS_DIR="$(dirname "$BASH_CONFIG_ALIAS_SRC")"
+bacon_export alias
 
 # User specific aliases and functions
 alias cp='cp -i'

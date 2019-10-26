@@ -4,8 +4,7 @@
 
 hash tmux &>/dev/null || return 1
 
-export BASH_CONFIG_TMUX_SRC="$(readlink -f "${BASH_SOURCE[0]}")"
-export BASH_CONFIG_TMUX_DIR="$(dirname "$BASH_CONFIG_TMUX_SRC")"
+bacon_export tmux
 
 #alias for tmux
 alias tmx='tmux'
