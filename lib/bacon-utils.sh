@@ -257,10 +257,10 @@ bacon_load() {
 
     for dir in "${BACON_LIB_DIR[@]}"; do
         # shellcheck disable=SC1090
-        if [[ -f $dir/$1.sh ]]; then
+        if [[ -f $dir/$1 ]]; then
             if ! bacon_has_map __BACON_LOADED_FILE "$1"; then
                 # shellcheck disable=SC1090,SC2034
-                source "$dir/$1.sh" && __BACON_LOADED_FILE[$1]="$dir/$1.sh"
+                source "$dir/$1" && __BACON_LOADED_FILE[$1]="$dir/$1"
                 return 0
             fi
         fi

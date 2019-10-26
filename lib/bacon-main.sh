@@ -10,7 +10,7 @@ export BACON_MAIN_ABS_DIR="$(dirname "$BACON_MAIN_ABS_SRC")"
 bacon_init() {
     local BACON_LIB_DIR=("$BACON_MAIN_ABS_DIR")
     for c in "$@"; do
-        bacon_load "$c" || true
+        bacon_load "${c}.sh" || true
     done
 }
 
@@ -20,8 +20,8 @@ bacon_load_module() {
         local BACON_LIB_DIR=("$d")
         for m in "$d"/*.sh; do
             local mod="${m##*/}"; mod="${mod%.sh}"
-            bacon_module_start "$m"
-            bacon_load "$mod"
+            bacon_module_start "$mod"
+            bacon_load "${m##*/}"
             bacon_module_end
         done
     done
@@ -31,6 +31,8 @@ bacon_configure_defaults() {
     declare -ga BACON_MOD_BUILTIN_DIR=("$BACON_MAIN_ABS_DIR/../configs")
     declare -ga BACON_MOD_USER_DIR=("$HOME/.bacon" "$HOME/.bash-configs")
     BACON_LIB_DIR=("$BACON_MAIN_ABS_DIR")
+    BACON_NO_ENSURE=yes
+    BACON_DEBUG=
     BACON_PRECMDS=('export LAST_STATUS=$?' 'bacon_prompt_PS1')
     BACON_PROMPT_PS1_LAYOUT=(
         bacon_prompt_last_status
@@ -40,7 +42,6 @@ bacon_configure_defaults() {
     )
     BACON_PROMPT_COUNTERS+=('dirs -p | tail -n +2 | wc -l')
     BACON_PROMPT_COUNTERS+=('jobs -p | wc -l')
-    BACON_NO_ENSURE=yes
 }
 
 bacon_main() {

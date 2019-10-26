@@ -417,7 +417,7 @@ EOF
     run bacon_load
     assert_failure
 
-    run bacon_load "$(suitname)"
+    run bacon_load "$(suitname).sh"
     assert_success
     run bacon_load no_mod
     assert_failure
@@ -426,7 +426,7 @@ EOF
     mkdir -p "$libdir"
     BACON_LIB_DIR+=("$libdir")
     echo "hello() { echo hello; }" >"$libdir/hello.sh"
-    run eval '(bacon_load hello; hello)'
+    run eval '(bacon_load hello.sh; hello)'
     assert_success
     assert_output "hello"
     
@@ -434,7 +434,7 @@ EOF
     mkdir -p "$libdir2"
     BACON_LIB_DIR+=("$libdir2")
     echo "world() { echo world; }" >"$libdir2/world.sh"
-    run eval '(bacon_load world; world)'
+    run eval '(bacon_load world.sh; world)'
     assert_success
     assert_output "world"
 
@@ -442,7 +442,7 @@ EOF
     [[ -n \$BACON_LOAD_COUNT ]] || BACON_LOAD_COUNT=0
     echo "\$((++BACON_LOAD_COUNT))"
 EOF
-    run eval '(bacon_load count; bacon_load count; bacon_load count)'
+    run eval '(bacon_load count.sh; bacon_load count.sh; bacon_load count.sh)'
     assert_match '^1$'
 }
 
