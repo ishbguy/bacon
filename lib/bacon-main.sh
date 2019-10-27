@@ -14,19 +14,6 @@ bacon_init() {
     done
 }
 
-bacon_load_module() {
-    for d in "$@"; do
-        [[ -d $d ]] || continue
-        local BACON_LIB_DIR=("$d")
-        for m in "$d"/*.sh; do
-            local mod="${m##*/}"; mod="${mod%.sh}"
-            bacon_cap_start "$mod"
-            bacon_load "${m##*/}"
-            bacon_cap_end
-        done
-    done
-}
-
 bacon_configure_defaults() {
     declare -ga BACON_MOD_BUILTIN_DIR=("$BACON_MAIN_ABS_DIR/../configs")
     declare -ga BACON_MOD_USER_DIR=("$HOME/.bacon" "$HOME/.bash-configs")

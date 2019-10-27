@@ -7,6 +7,6 @@ hash dircolors &>/dev/null || return 1
 bacon_export ls
 
 # Setting the ls colors
-[[ -f $BASH_CONFIG_LS_DIR/dircolors ]] && eval "$(dircolors "$BASH_CONFIG_LS_DIR/dircolors")"
+[[ -f $BACON_SOURCE_LS_ABS_DIR/dircolors ]] && eval "$(dircolors "$BACON_SOURCE_LS_ABS_DIR/dircolors")"
 
 # vim:set ft=sh ts=4 sw=4:

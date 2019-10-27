@@ -62,4 +62,28 @@ bacon_cap_end() {
     unset BEFORE_ALIAS AFTER_ALIAS BEFORE_FUNCS AFTER_FUNCS BEFORE_VARS AFTER_VARS BACON_MODULE_TMP BACON_MODULE_TMP_ENCODE
 }
 
+bacon_load_module() {
+    for d in "$@"; do
+        [[ -d $d ]] || continue
+        local BACON_LIB_DIR=("$d")
+        for m in "$d"/*.sh; do
+            [[ -f $m ]] || continue
+            local mod="${m##*/}"; mod="${mod%.sh}"
+            bacon_cap_start "$mod"
+            bacon_load "${m##*/}"
+            bacon_cap_end
+        done
+        for m in "$d"/**/*.sh; do
+            [[ -f $m ]] || continue
+            local mod="${m##*/}"; mod="${mod%.sh}"
+            local dir="$(dirname "$m")"; dir="${dir##*/}"
+            # dir name must match mod name
+            [[ "x$mod" == "x$dir" ]] || continue
+            bacon_cap_start "$mod"
+            bacon_load "$dir/$mod.sh"
+            bacon_cap_end
+        done
+    done
+}
+
 # vim:set ft=sh ts=4 sw=4:

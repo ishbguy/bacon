@@ -18,3 +18,20 @@ load bacon-helper
     run eval '(bacon_cap_start test; A=a B=b; bacon_cap_end; echo "${BACON_MODULE_TEST_VARS[@]}")'
     assert_match "A B"
 }
+
+@test "bacon_load_module" {
+    mkdir -p $PROJECT_TMP_DIR/test
+    echo "echo test" >$PROJECT_TMP_DIR/test/test.sh
+    run bacon_load_module
+    assert_success
+    run bacon_load_module DIR_NOT_EXIST
+    assert_success
+    run bacon_load_module $PROJECT_TMP_DIR/test
+    assert_success
+    assert_output test
+    mkdir -p $PROJECT_TMP_DIR/test/dir
+    echo "echo dir" >$PROJECT_TMP_DIR/test/dir/dir.sh
+    run bacon_load_module $PROJECT_TMP_DIR/test
+    assert_success
+    assert_match "dir"
+}
