@@ -8,18 +8,29 @@ declare -ga BACON_PROMPT_COUNTERS=()
 declare -gA BACON_PROMPT_COLOR=()
 declare -gA BACON_PROMPT_CHARS=()
 
+bacon_promptc() {
+    local color="${BACON_ANSI_COLOR[default]}"
+    if bacon_has_map BACON_ANSI_COLOR "$1"; then
+        color="${BACON_ANSI_COLOR[$1]}"; shift;
+        if bacon_has_map BACON_ANSI_COLOR "$1"; then
+            color="$color;${BACON_ANSI_COLOR[$1]}"; shift
+        fi
+    fi
+    printf '\[\033[%sm\]%s\[\033[00m\]\n' "$color" "$*"
+}
+
 bacon_prompt_last_status() {
     local color="${BACON_PROMPT_COLOR[last_fail]:-red}"
     [[ $LAST_STATUS -eq 0 ]] && color="${BACON_PROMPT_COLOR[last_ok]:-green}"
-    bacon_printc "$color" "${BACON_PROMPT_CHARS[last_status]:-&}"
+    bacon_promptc "$color" "${BACON_PROMPT_CHARS[last_status]:-&}"
 }
 
 bacon_prompt_time() {
-    bacon_printc "${BACON_PROMPT_COLOR[time]:-green}" "${BACON_PROMPT_CHARS[time]:-[\A]}"
+    bacon_promptc "${BACON_PROMPT_COLOR[time]:-green}" "${BACON_PROMPT_CHARS[time]:-[\A]}"
 }
 
 bacon_prompt_location() {
-    bacon_printc "${BACON_PROMPT_COLOR[location]:-blue}" "${BACON_PROMPT_CHARS[location]:-[\u@\h:\W]}"
+    bacon_promptc "${BACON_PROMPT_COLOR[location]:-blue}" "${BACON_PROMPT_CHARS[location]:-[\u@\h:\W]}"
 }
 
 bacon_prompt_counter() {
@@ -37,11 +48,11 @@ bacon_prompt_counter() {
             break
         done
     done
-    [[ -n $str ]] && bacon_printc "${BACON_PROMPT_COLOR[counter]:-yellow}" "[$str]"
+    [[ -n $str ]] && bacon_promptc "${BACON_PROMPT_COLOR[counter]:-yellow}" "[$str]"
 }
 
 bacon_prompt_dollar() {
-    bacon_printc "${BACON_PROMPT_COLOR[dollar]:-blue}" "${BACON_PROMPT_CHARS[dollar]:-\$ }"
+    bacon_promptc "${BACON_PROMPT_COLOR[dollar]:-blue}" "${BACON_PROMPT_CHARS[dollar]:-\$ }"
 }
 
 bacon_prompt_PS1() {

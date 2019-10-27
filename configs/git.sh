@@ -44,7 +44,7 @@ alias git_merge_work='git pull && git reset --merge ORIG_HEAD'
 
 github() { git clone "https://github.com/$1"; }
 
-if bacon_defined BACON_PROMPT_PS1_LAYOUT && bacon_definedf bacon_printc; then
+if bacon_defined BACON_PROMPT_PS1_LAYOUT && bacon_definedf bacon_promptc; then
     bash_prompt_git_branch() {
         local IFS=$'\n'
         local bstat=($(git status -sb 2>/dev/null))
@@ -65,7 +65,7 @@ if bacon_defined BACON_PROMPT_PS1_LAYOUT && bacon_definedf bacon_printc; then
         for c in "${!change[@]}"; do
             brch+=":${c}${change[$c]}"
         done
-        bacon_printc "${BACON_PROMPT_COLOR[git]:-magenta}" "[$brch]"
+        bacon_promptc "${BACON_PROMPT_COLOR[git]:-magenta}" "[$brch]"
     }
     BACON_PROMPT_PS1_LAYOUT+=(bash_prompt_git_branch)
 fi
