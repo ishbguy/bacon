@@ -374,18 +374,18 @@ EOF
     assert_match "No such files or dirs: $PROJECT_TMP_DIR/N."
 }
 
-@test "bacon_abs_path" {
-    run bacon_abs_path "$PROJECT_TMP_DIR/xxxx"
+@test "bacon_abspath" {
+    run bacon_abspath "$PROJECT_TMP_DIR/xxxx"
     assert_success
     assert_output "$PROJECT_TMP_DIR/xxxx"
 
     mkdir -p "$PROJECT_TMP_DIR/real-dir" && ln -s "$PROJECT_TMP_DIR/real-dir" "$PROJECT_TMP_DIR/link-dir"
-    run bacon_abs_path "$PROJECT_TMP_DIR/link-dir"
+    run bacon_abspath "$PROJECT_TMP_DIR/link-dir"
     assert_success
     assert_output "$PROJECT_TMP_DIR/real-dir"
 
     touch "$PROJECT_TMP_DIR/real-file" && ln -s "$PROJECT_TMP_DIR/real-file" "$PROJECT_TMP_DIR/link-file"
-    run bacon_abs_path "$PROJECT_TMP_DIR/link-file"
+    run bacon_abspath "$PROJECT_TMP_DIR/link-file"
     assert_success
     assert_output "$PROJECT_TMP_DIR/real-file"
 }
@@ -564,4 +564,88 @@ EOF
     assert_success
     run eval '(bacon_export test; [[ -n $BACON_SOURCE_TEST_ABS_SRC && -n $BACON_SOURCE_TEST_ABS_DIR ]])'
     assert_success
+}
+
+@test "bacon_addprefix" {
+    run bacon_addprefix
+    assert_failure
+    run bacon_addprefix x
+    assert_success
+    assert_output ""
+    run bacon_addprefix p_ ""
+    assert_success
+    assert_output "p_"
+    run bacon_addprefix p_ 1 2
+    assert_success
+    assert_output "p_1 p_2"
+    run bacon_addprefix '"' 1 2
+    assert_success
+    assert_output '"1 "2'
+    run bacon_addprefix "'" 1 2
+    assert_success
+    assert_output "'1 '2"
+}
+
+@test "bacon_addsuffix" {
+    run bacon_addsuffix
+    assert_failure
+    run bacon_addsuffix x
+    assert_success
+    assert_output ""
+    run bacon_addsuffix _s ""
+    assert_success
+    assert_output "_s"
+    run bacon_addsuffix _s 1 2
+    assert_success
+    assert_output "1_s 2_s"
+    run bacon_addsuffix '"' 1 2
+    assert_success
+    assert_output '1" 2"'
+    run bacon_addsuffix "'" 1 2
+    assert_success
+    assert_output "1' 2'"
+}
+
+@test "bacon_wrap" {
+    run bacon_wrap
+    assert_failure
+    run bacon_wrap x
+    assert_success
+    assert_output ""
+    run bacon_wrap X ""
+    assert_success
+    assert_output "XX"
+    run bacon_wrap X 1 2
+    assert_success
+    assert_output "X1X X2X"
+    run bacon_wrap '"' 1 2
+    assert_success
+    assert_output '"1" "2"'
+    run bacon_wrap "'" 1 2
+    assert_success
+    assert_output "'1' '2'"
+    run bacon_wrap '(' 1 2
+    assert_output '(1) (2)'
+    assert_success
+    run bacon_wrap ')' 1 2
+    assert_success
+    assert_output '(1) (2)'
+    run bacon_wrap '{' 1 2
+    assert_success
+    assert_output '{1} {2}'
+    run bacon_wrap '}' 1 2
+    assert_success
+    assert_output '{1} {2}'
+    run bacon_wrap '[' 1 2
+    assert_success
+    assert_output '[1] [2]'
+    run bacon_wrap ']' 1 2
+    assert_success
+    assert_output '[1] [2]'
+    run bacon_wrap '<' 1 2
+    assert_success
+    assert_output '<1> <2>'
+    run bacon_wrap '>' 1 2
+    assert_success
+    assert_output '<1> <2>'
 }

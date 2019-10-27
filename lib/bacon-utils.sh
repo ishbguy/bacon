@@ -238,16 +238,16 @@ bacon_require() {
     bacon_require_base bacon_is_exist "No such files or dirs" "$@"
 }
 
-bacon_abs_path() {
+bacon_abspath() {
     readlink -f "$1"
 }
 
 bacon_self() {
-    bacon_abs_path "${BASH_SOURCE[1]}"
+    bacon_abspath "${BASH_SOURCE[1]}"
 }
 
 bacon_lib() {
-    bacon_abs_path "${BASH_SOURCE[0]%/*}"
+    bacon_abspath "${BASH_SOURCE[0]%/*}"
 }
 
 bacon_load() {
@@ -333,7 +333,7 @@ bacon_map() {
 
 # alias @export='bacon_export || return 0'
 bacon_export() {
-    local src="$(bacon_abs_path "${BASH_SOURCE[1]}")"
+    local src="$(bacon_abspath "${BASH_SOURCE[1]}")"
     local dir="$(dirname "$src")"
     local -u ns="${1:-$(bacon_encode_base "$src")}"
 
@@ -342,6 +342,70 @@ bacon_export() {
 
     eval "export BACON_SOURCE_${ns}_ABS_SRC=$src"
     eval "export BACON_SOURCE_${ns}_ABS_DIR=$dir"
+}
+
+bacon_addprefix() {
+    local usage="Usage: ${FUNCNAME[0]} <prefix> [args..]"
+    bacon_ensure "(($# >=1 ))" "$usage"
+
+    local p=$1; shift
+    [[ $# == 0 ]] && return 0
+    case $p in
+        [\(\)]) p="\\$p" ;;
+        [\<\>]) p="\\$p" ;;
+        \") p='\"' ;;
+        \') p="\\'" ;;
+    esac
+    local IFS=,
+    if [[ $# == 1 ]]; then
+        echo "${p}$1"
+    else
+        eval echo "${p}{$*}"
+    fi
+}
+
+bacon_addsuffix() {
+    local usage="Usage: ${FUNCNAME[0]} <suffix> [args..]"
+    bacon_ensure "(($# >=1 ))" "$usage"
+
+    local s=$1; shift
+    [[ $# == 0 ]] && return 0
+    case $s in
+        [\(\)]) s="\\$s" ;;
+        [\<\>]) s="\\$s" ;;
+        \") s='\"' ;;
+        \') s="\\'" ;;
+    esac
+    local IFS=,
+    if [[ $# == 1 ]]; then
+        echo "$1${s}"
+    else
+        eval echo "{$*}${s}"
+    fi
+}
+
+bacon_wrap() {
+    local usage="Usage: ${FUNCNAME[0]} <suffix> [args..]"
+    bacon_ensure "(($# >=1 ))" "$usage"
+
+    local w=$1; shift
+    local w1 w2
+    case $w in
+        [\(\)]) w1='\('; w2='\)' ;;
+        [\{\}]) w1='{'; w2='}' ;;
+        [\[\]]) w1='['; w2=']' ;;
+        [\<\>]) w1='\<'; w2='\>' ;;
+        \") w1='\"'; w2='\"' ;;
+        \') w1="\\'"; w2="\\'" ;;
+        *) w1="$w"; w2="$w" ;;
+    esac
+    [[ $# == 0 ]] && return 0
+    local IFS=,
+    if [[ $# == 1 ]]; then
+        echo "${w1}$1${w2}"
+    else
+        eval echo "${w1}{$*}${w2}"
+    fi
 }
 
 # vim:set ft=sh ts=4 sw=4:
