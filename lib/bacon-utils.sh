@@ -251,16 +251,17 @@ bacon_lib() {
 }
 
 bacon_load() {
-    [[ $# == 1 && -n $1 ]] || return 1
+    local usage="Usage: ${FUNCNAME[0]} <filename>"
+    bacon_ensure "[[ $# == 1 && -n $1 ]]" "$usage"
+
     # shellcheck disable=SC2155
     bacon_defined __BACON_LOADED_FILE || declare -gA __BACON_LOADED_FILE=()
 
     for dir in "${BACON_LIB_DIR[@]}"; do
-        # shellcheck disable=SC1090
+        # shellcheck disable=SC1090,SC2034
         if [[ -f $dir/$1 ]]; then
-            if ! bacon_has_map __BACON_LOADED_FILE "$1"; then
-                # shellcheck disable=SC1090,SC2034
-                source "$dir/$1" && __BACON_LOADED_FILE[$1]="$dir/$1"
+            if ! bacon_has_map __BACON_LOADED_FILE "$dir/$1"; then
+                source "$dir/$1" && __BACON_LOADED_FILE["$dir/$1"]="$dir/$1"
                 return 0
             fi
         fi
