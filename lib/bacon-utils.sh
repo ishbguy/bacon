@@ -9,71 +9,67 @@ export BACON_UTILS_ABS_DIR="$(dirname "$BACON_UTILS_ABS_SRC")"
 declare -g  BACON_NO_ENSURE=""
 declare -g  BACON_DEBUG=""
 declare -ga BACON_LIB_DIR=()
-
-if ! declare -p BACON_ANSI_COLOR &>/dev/null; then
-    # ANSI 8 colors
-    declare -gA BACON_ANSI_COLOR
-    BACON_ANSI_COLOR[black]=30
-    BACON_ANSI_COLOR[red]=31
-    BACON_ANSI_COLOR[green]=32
-    BACON_ANSI_COLOR[yellow]=33
-    BACON_ANSI_COLOR[blue]=34
-    BACON_ANSI_COLOR[magenta]=35
-    BACON_ANSI_COLOR[cyan]=36
-    BACON_ANSI_COLOR[white]=37
-    BACON_ANSI_COLOR[default]=39
-
-    BACON_ANSI_COLOR[bg_black]=40
-    BACON_ANSI_COLOR[bg_red]=41
-    BACON_ANSI_COLOR[bg_green]=42
-    BACON_ANSI_COLOR[bg_yellow]=43
-    BACON_ANSI_COLOR[bg_blue]=44
-    BACON_ANSI_COLOR[bg_magenta]=45
-    BACON_ANSI_COLOR[bg_cyan]=46
-    BACON_ANSI_COLOR[bg_white]=47
-    BACON_ANSI_COLOR[bg_default]=49
-
-    # ANSI color set
-    BACON_ANSI_COLOR[bold]=1
-    BACON_ANSI_COLOR[dim]=2
-    BACON_ANSI_COLOR[underline]=4
-    BACON_ANSI_COLOR[blink]=5
-    BACON_ANSI_COLOR[invert]=7
-    BACON_ANSI_COLOR[hidden]=8
-
-    # ANSI color reset
-    BACON_ANSI_COLOR[reset]=0
-    BACON_ANSI_COLOR[reset_bold]=21
-    BACON_ANSI_COLOR[reset_dim]=22
-    BACON_ANSI_COLOR[reset_underline]=24
-    BACON_ANSI_COLOR[reset_blink]=25
-    BACON_ANSI_COLOR[reset_invert]=27
-    BACON_ANSI_COLOR[reset_hidden]=28
-fi
+declare -gA BACON_COLOR=()
 
 bacon_has_map() {
     local -n map="$1"; shift
     [[ -n $1 && -n ${map[$1]} ]]
 }
 
+# bacon_color_init [ --setaf | --setab | --misc  ] var
+# Assigns the selected set of escape mappings to the given associative array names.
+bacon_color_init() {
+    local -a fg_clrs bg_clrs msc
+    fg_clrs=(black red green yellow blue magenta cyan grey darkgrey ltred ltgreen ltyellow ltblue ltmagenta ltcyan white)
+    bg_clrs=($(IFS=,; eval "echo bg_{${fg_clrs[*]}}"))
+    msc=(sgr0 bold dim smul blink rev invis)
+    while ! ${2:+false}; do
+        case ${1#--} in
+            setaf)
+                for x in "${!fg_clrs[@]}"; do
+                    eval "$2"'[${fg_clrs[x]}]=$(tput "${1#--}" "$x")'
+                done
+                eval "$2[default]=[39m"
+                ;;
+            setab)
+                for x in "${!bg_clrs[@]}"; do
+                    eval "$2"'[${bg_clrs[x]}]=$(tput "${1#--}" "$x")'
+                done
+                eval "$2[bg_default]=[49m"
+                ;;
+            misc)
+                for x in "${msc[@]}"; do
+                    eval "$2"'[$x]=$(tput "$x")'
+                done
+                eval "$2[reset]=[0m"
+                eval "$2[none]=[0m"
+                ;;
+            *)
+                return 1
+        esac
+        shift 2
+    done
+}
+bacon_color_init --setaf BACON_COLOR --setab BACON_COLOR --misc BACON_COLOR
+
 bacon_set_color() {
-    local color="${BACON_ANSI_COLOR[default]}"
-    bacon_has_map BACON_ANSI_COLOR "$1" && color="${BACON_ANSI_COLOR[$1]}"
-    printf '\x1B[%sm' "$(bacon_has_map BACON_ANSI_COLOR "$2" &&
-        echo "$color;${BACON_ANSI_COLOR[$2]}" || echo "$color")"
-    }
+    local color
+    for c in "$@"; do
+        bacon_has_map BACON_COLOR "$c" && color+="${BACON_COLOR[$c]}"
+    done
+    printf '%s' "$color"
+}
 
 bacon_printc() {
-    local color=default
-    local format
-    if bacon_has_map BACON_ANSI_COLOR "$1"; then
-        color="$1"; shift
-        if bacon_has_map BACON_ANSI_COLOR "$1"; then
-            format="$1"; shift
+    local color=${BACON_COLOR[default]}
+    if bacon_has_map BACON_COLOR "$1"; then
+        color="${BACON_COLOR[$1]}"; shift
+        if bacon_has_map BACON_COLOR "$1"; then
+            color+="${BACON_COLOR[$1]}"; shift
         fi
     fi
     local IFS=' '
-    printf "%s%s%s\n" "$(bacon_set_color "$color" "$format")" "$*" "$(bacon_set_color reset)"
+    printf "${color}%s${BACON_COLOR[reset]}\n" "$*"
 }
 
 bacon_puts() {

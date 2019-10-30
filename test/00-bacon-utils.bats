@@ -18,17 +18,18 @@ load bacon-helper
 @test "bacon_printc" {
     run bacon_printc "test"
     assert_success
-    assert_match "$(printf '\x1B\[%sm' ${BACON_ANSI_COLOR[default]})"
+    assert_match "$(grep -oE '[0-9]+' <<<"$BACON_COLOR[default]")"
 
-    for color in "${!BACON_ANSI_COLOR[@]}"; do
+    for color in "${!BACON_COLOR[@]}"; do
         run bacon_printc $color "test"
         assert_success
-        assert_match "$(printf '\x1B\[%sm' ${BACON_ANSI_COLOR[$color]})"
+        assert_match "$(grep -oE '[0-9]+' <<<"$BACON_COLOR[$color]")"
     done
 
     run bacon_printc red bold test
     assert_success
-    assert_match "$(printf '\x1B\[%sm' "${BACON_ANSI_COLOR[red]};${BACON_ANSI_COLOR[bold]}")"
+    assert_match "$(grep -oE '[0-9]+' <<<"$BACON_COLOR[red]")"
+    assert_match "$(grep -oE '[0-9]+' <<<"$BACON_COLOR[bold]")"
 }
 
 @test "bacon_puts" {
@@ -54,21 +55,21 @@ load bacon-helper
 @test "bacon_info" {
     run bacon_info test
     assert_success
-    assert_match "$(printf '\x1B\[%sm' ${BACON_ANSI_COLOR[yellow]})"
+    assert_match "$(grep -oE '[0-9]+' <<<"${BACON_COLOR[yellow]}")"
     assert_match "INFO"
 }
 
 @test "bacon_warn" {
     run bacon_warn test
     assert_failure
-    assert_match "$(printf '\x1B\[%sm' ${BACON_ANSI_COLOR[red]})"
+    assert_match "$(grep -oE '[0-9]+' <<<"${BACON_COLOR[red]}")"
     assert_match "WARN"
 }
 
 @test "bacon_die" {
     run bacon_die test
     assert_failure
-    assert_match "$(printf '\x1B\[%sm' ${BACON_ANSI_COLOR[red]})"
+    assert_match "$(grep -oE '[0-9]+' <<<"${BACON_COLOR[red]}")"
     assert_match "ERROR"
 }
 

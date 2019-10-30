@@ -9,14 +9,15 @@ declare -gA BACON_PROMPT_COLOR=()
 declare -gA BACON_PROMPT_CHARS=()
 
 bacon_promptc() {
-    local color="${BACON_ANSI_COLOR[default]}"
-    if bacon_has_map BACON_ANSI_COLOR "$1"; then
-        color="${BACON_ANSI_COLOR[$1]}"; shift;
-        if bacon_has_map BACON_ANSI_COLOR "$1"; then
-            color="$color;${BACON_ANSI_COLOR[$1]}"; shift
+    local color=${BACON_COLOR[default]}
+    if bacon_has_map BACON_COLOR "$1"; then
+        color="${BACON_COLOR[$1]}"; shift
+        if bacon_has_map BACON_COLOR "$1"; then
+            color+="${BACON_COLOR[$1]}"; shift
         fi
     fi
-    printf '\[\033[%sm\]%s\[\033[00m\]\n' "$color" "$*"
+    local IFS=' '
+    printf '\[%s\]%s\[\033[00m\]\n' "$color" "$*"
 }
 
 bacon_prompt_last_status() {
