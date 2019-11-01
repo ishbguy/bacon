@@ -60,6 +60,8 @@ if bacon_defined BACON_PROMPT_PS1_LAYOUT && bacon_definedf bacon_promptc; then
         [[ -n ${brchi[2]} ]] && brch+="${trki[${brchi[2]#[}]}${brchi[3]%]}"
         local tmp=()
         for c in "${bstat[@]:1}"; do
+            # prevent special chars to be expand
+            c="${c//\?\?/'??'}"; c="${c//\!/'!'}"
             tmp=($c)
             ((++change[${tmp[0]}]))
         done
