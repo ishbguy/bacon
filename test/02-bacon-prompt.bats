@@ -116,13 +116,15 @@ load bacon-helper
     assert_match 'D'
 }
 
-@test "bacon_prompt_PS1" {
+@test "bacon_prompt_ps1" {
     local BACON_PROMPT_PS1_LAYOUT=()
-    run eval bacon_prompt_PS1 '&&' '[[ $PS1 =~ \$ ]]'
+    run bacon_prompt_ps1
     assert_success
+    assert_match '\$'
     one() { echo one; }
     two() { echo two; }
     BACON_PROMPT_PS1_LAYOUT=(one two)
-    run eval bacon_prompt_PS1 '&&' '[[ $PS1 =~ onetwo ]]'
+    run bacon_prompt_ps1
     assert_success
+    assert_match 'onetwo'
 }

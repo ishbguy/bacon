@@ -15,12 +15,21 @@ bacon_init() {
 }
 
 bacon_configure_defaults() {
+    # Configurations for bacon-utils
+    BACON_LIB_DIR=("$BACON_MAIN_ABS_DIR")
+    BACON_NO_ENSURE="${BACON_NO_ENSURE:-yes}"
+    BACON_DEBUG="${BACON_DEBUG:-}"
+
+    # Configurations for bacon-module
     declare -ga BACON_MOD_BUILTIN_DIR=("$BACON_MAIN_ABS_DIR/../configs")
     declare -ga BACON_MOD_USER_DIR=("$HOME/.bacon" "$HOME/.bash-configs")
-    BACON_LIB_DIR=("$BACON_MAIN_ABS_DIR")
-    BACON_NO_ENSURE=yes
-    BACON_DEBUG=
-    BACON_PRECMDS=('export LAST_STATUS=$?' 'bacon_prompt_PS1')
+    BACON_CAP_OFF="${BACON_CAP_OFF:-yes}"
+
+    # Configurations for bacon-precmd
+    PROMPT_COMMAND=bacon_precmd
+    BACON_PRECMDS=('export LAST_STATUS=$?' 'export PS1="$(bacon_prompt_ps1)"')
+
+    # Configurations for bacon-prompt
     BACON_PROMPT_PS1_LAYOUT=(
         bacon_prompt_last_status
         bacon_prompt_time
@@ -29,7 +38,7 @@ bacon_configure_defaults() {
     )
     BACON_PROMPT_COUNTERS+=('dirs -p | tail -n +2 | wc -l')
     BACON_PROMPT_COUNTERS+=('jobs -p | wc -l')
-    BACON_CAP_OFF=yes
+    export PS4='+ $(basename ${0##+(-)}) line $LINENO: '
 }
 
 bacon_main() {

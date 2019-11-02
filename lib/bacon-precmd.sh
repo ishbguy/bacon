@@ -11,6 +11,4 @@ bacon_precmd() {
     done
 }
 
-PROMPT_COMMAND=bacon_precmd
-
 # vim:set ft=sh ts=4 sw=4:

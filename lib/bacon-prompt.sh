@@ -56,15 +56,13 @@ bacon_prompt_dollar() {
     bacon_promptc "${BACON_PROMPT_COLOR[dollar]:-blue}" "${BACON_PROMPT_CHARS[dollar]:-\$ }"
 }
 
-bacon_prompt_PS1() {
-    PS1=
+bacon_prompt_ps1() {
+    ps1=
     for layout in "${BACON_PROMPT_PS1_LAYOUT[@]}"; do
-        bacon_definedf "$layout" && PS1+="$($layout)"
+        bacon_definedf "$layout" && ps1+="$($layout)"
     done
-    PS1+="$(bacon_prompt_dollar)"
-    export PS1
+    ps1+="$(bacon_prompt_dollar)"
+    echo "$ps1"
 }
-
-export PS4='+ $(basename ${0##+(-)}) line $LINENO: '
 
 # vim:set ft=sh ts=4 sw=4:
