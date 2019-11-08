@@ -31,6 +31,13 @@ bacon_configure_defaults() {
     BACON_PRECMD_TRAP=('export PS1="$(bacon_prompt_ps1)"')
     BACON_PRECMD=('export LAST_STATUS=$?')
 
+    # Configurations for bacon-async
+    bacon_async_trap SIGUSR2
+    # Example for using bacon-async with bacon-precmd and bacon-prompt
+    # BACON_PRECMD+=('bacon_async_handler')
+    # export_ps1() { export PS1="$*"; }
+    # bacon_async_add bacon_prompt bacon_prompt_ps1 export_ps1
+
     # Configurations for bacon-prompt
     BACON_PROMPT_PS1_LAYOUT=(
         bacon_prompt_last_status
@@ -45,7 +52,7 @@ bacon_configure_defaults() {
 
 bacon_main() {
     bacon_require_cmd sed awk diff
-    bacon_init 'bacon-module' 'bacon-precmd' 'bacon-prompt'
+    bacon_init 'bacon-async' 'bacon-module' 'bacon-precmd' 'bacon-prompt'
     bacon_configure_defaults
     bacon_load_module "${BACON_MOD_BUILTIN_DIR[@]}"
     bacon_load_module "${BACON_MOD_USER_DIR[@]}"
