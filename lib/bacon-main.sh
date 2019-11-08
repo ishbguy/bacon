@@ -27,7 +27,9 @@ bacon_configure_defaults() {
 
     # Configurations for bacon-precmd
     PROMPT_COMMAND=bacon_precmd
-    BACON_PRECMDS=('export LAST_STATUS=$?' 'export PS1="$(bacon_prompt_ps1)"')
+    BACON_PRECMD_TRAP_SIG=SIGUSR1
+    BACON_PRECMD_TRAP=('export PS1="$(bacon_prompt_ps1)"')
+    BACON_PRECMD=('export LAST_STATUS=$?')
 
     # Configurations for bacon-prompt
     BACON_PROMPT_PS1_LAYOUT=(
