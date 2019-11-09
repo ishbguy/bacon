@@ -270,20 +270,48 @@ EOF
     assert_success
 }
 
-@test "bacon_date_cmp" {
-    run bacon_date_cmp '2019-10-01 10:00:00' '2019-10-01 10:00:00'
+@test "bacon_datecmp" {
+    run bacon_datecmp '2019-10-01 10:00:00' '2019-10-01 10:00:00'
     assert_success
     assert_output 0
-    run bacon_date_cmp '2019-10-01 10:00:00' '2019-10-01 10:00:01'
+    run bacon_datecmp '2019-10-01 10:00:00' '2019-10-01 10:00:01'
     assert_success
     assert_output -1
-    run bacon_date_cmp '2019-10-01 10:00:01' '2019-10-01 10:00:00'
+    run bacon_datecmp '2019-10-01 10:00:01' '2019-10-01 10:00:00'
     assert_success
     assert_output 1
-    run bacon_date_cmp '1970-01-01' '2019-10-01'
+    run bacon_datecmp '1970-01-01' '2019-10-01'
     assert_success
-    run bacon_date_cmp '2019-10-01' '1970-01-01' 
+    run bacon_datecmp '2019-10-01' '1970-01-01' 
     assert_success
+}
+
+@test "bacon_encode" {
+    local punct=('`' '!' '~' '@' '#' '$' '%' '^' '&' '*' '(' ')' '-' '_' '=' '+'
+                 '[' ']' '{' '}' '\' '|' ';' ':' "'" '"' ',' '.' '<' '>' '/' '?')
+    for i in "${punct[@]}"; do
+        run bacon_encode "A${i}B"
+        assert_output 'A_B'
+    done
+
+    run eval "(echo A/B | bacon_encode)"
+    assert_output 'A_B'
+}
+
+@test "bacon_tolower" {
+    local string="lKLHFLkxNfkdjfhKSHfjkadfg"
+    run bacon_tolower "$string"
+    assert_output "lklhflkxnfkdjfhkshfjkadfg"
+    run eval "(echo $string | bacon_tolower)"
+    assert_output "lklhflkxnfkdjfhkshfjkadfg"
+}
+
+@test "bacon_toupper" {
+    local string="lKLHFLkxNfkdjfhKSHfjkadfg"
+    run bacon_toupper "$string"
+    assert_output "LKLHFLKXNFKDJFHKSHFJKADFG"
+    run eval "(echo $string | bacon_toupper)"
+    assert_output "LKLHFLKXNFKDJFHKSHFJKADFG"
 }
 
 @test "bacon_pargs" {
@@ -297,13 +325,6 @@ EOF
     assert_success
     run eval bacon_pargs opt arg 'v:' -v v '&&' '[[ ${opt[v]} == 1 && ${arg[v]} == v ]]'
     assert_success
-
-    # run eval bacon_pargs opt arg 'v:' a b -v v '&&' '[[ ${opt[v]} == 1 && ${arg[v]} == v ]]'
-    # assert_success
-    # run eval bacon_pargs opt arg 'hv:' a b -v v -h c '&&' '[[ ${opt[h]} == 1 && ${opt[v]} == 1 && ${arg[v]} == v ]]'
-    # assert_success
-    # run eval bacon_pargs opt arg 'hv:' a b -hv v '&&' '[[ ${opt[h]} == 1 && ${opt[v]} == 1 && ${arg[v]} == v ]]'
-    # assert_success
 
     run bacon_pargs opt arg 'v' -x
     assert_failure
@@ -460,6 +481,8 @@ EOF
     assert_output "one"
     run eval '(bacon_push array one two; echo "${array[@]}")'
     assert_output "one two"
+    run eval '(array=(one); bacon_push array two; echo "${array[@]}")'
+    assert_output "one two"
 }
 
 @test "bacon_pop" {
@@ -484,6 +507,23 @@ EOF
     run eval '(bacon_pop array)'
     assert_success
     assert_output "two"
+}
+
+@test "bacon_unshift" {
+    local array=()
+    run bacon_unshift
+    assert_failure
+    run bacon_unshift array
+    assert_failure
+
+    run bacon_unshift array one
+    assert_success
+    run eval '(bacon_unshift array one; echo "${array[@]}")'
+    assert_output "one"
+    run eval '(bacon_unshift array one two; echo "${array[@]}")'
+    assert_output "one two"
+    run eval '(array=(one); bacon_unshift array two; echo "${array[@]}")'
+    assert_output "two one"
 }
 
 @test "bacon_shift" {

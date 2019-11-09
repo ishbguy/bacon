@@ -179,14 +179,42 @@ bacon_ensure() {
     fi
 }
 
-bacon_date_cmp() {
+bacon_datecmp() {
     echo "$(($(date -d "$1" +%s) - $(date -d "$2" +%s)))"
 }
 
+bacon_encode() {
+    if [[ $# == 0 ]]; then
+        sed -r 's/[^[:alnum:]]/_/g'
+    else
+        local IFS=' '
+        echo "${*//[^[:alnum:]]/_}"
+    fi
+}
+
+bacon_tolower() {
+    if [[ $# == 0 ]]; then
+        tr '[:upper:]' '[:lower:]'
+    else
+        local IFS=' '
+        echo "${*,,}"
+    fi
+}
+
+bacon_toupper() {
+    if [[ $# == 0 ]]; then
+        tr '[:lower:]' '[:upper:]'
+    else
+        local IFS=' '
+        echo "${*^^}"
+    fi
+}
+
 bacon_pargs() {
-    bacon_ensure "[[ $# -ge 3 ]]" "Need OPTIONS, ARGUMENTS and OPTSTRING"
-    bacon_ensure "[[ -n $1 && -n $2 && -n $3 ]]" "Args should not be empty."
-    bacon_ensure "bacon_is_map $1 && bacon_is_map $2" "OPTIONS and ARGUMENTS should be map."
+    local usage="Usage: ${FUNCNAME[0]} <opt-map> <arg-map> <optstring> [args...]"
+    bacon_ensure "[[ $# -ge 3 ]]" "$usage"
+    bacon_ensure "[[ -n $1 && -n $2 && -n $3 ]]" "$usage"
+    bacon_ensure "bacon_is_map $1 && bacon_is_map $2" "$usage"
 
     local -n __opt="$1"
     local -n __arg="$2"
@@ -205,8 +233,9 @@ bacon_pargs() {
 }
 
 bacon_require_base() {
-    bacon_ensure "[[ $# -gt 2 ]]" "Not enough args."
-    bacon_ensure "bacon_definedf $1" "$1 should be a bacon_defined func."
+    local usage="Usage: ${FUNCNAME[0]} <func> <msg> [args...]"
+    bacon_ensure "[[ $# -gt 2 ]]" "$usage"
+    bacon_ensure "bacon_definedf $1" "$usage"
 
     local -a miss
     local cmd="$1"
@@ -287,6 +316,15 @@ bacon_pop() {
     echo "$last"
 }
 
+bacon_unshift() {
+    local usage="Usage: ${FUNCNAME[0]} <array> [args..]"
+    bacon_ensure "(($# >= 2))" "$usage"
+    bacon_ensure "[[ $(bacon_typeof "$1") == array ]]" "$usage"
+
+    local -n __array=$1; shift
+    __array=("$@" "${__array[@]}")
+}
+
 bacon_shift() {
     local usage="Usage: ${FUNCNAME[0]} <array>"
     bacon_ensure "(($# == 1))" "$usage"
@@ -332,7 +370,7 @@ bacon_map() {
 bacon_export() {
     local src="$(bacon_abspath "${BASH_SOURCE[1]}")"
     local dir="$(dirname "$src")"
-    local -u ns="${1:-$(bacon_encode_base "$src")}"
+    local -u ns="${1:-$(basename "$src" .sh | bacon_encode)}"
 
     # source export guard
     # eval "[[ -z \$BACON_SOURCE_${ns}_ABS_SRC ]]" || return 1
