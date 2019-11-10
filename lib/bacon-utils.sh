@@ -144,6 +144,14 @@ bacon_typeof() {
     return 0
 }
 
+bacon_tmpfd() {
+    basename <(:)
+}
+
+bacon_is_running() {
+    ps -p "$1" &>/dev/null
+}
+
 bacon_is_sourced() {
     [[ -n ${FUNCNAME[1]} && ${FUNCNAME[1]} != "main" ]]
 }
@@ -223,13 +231,15 @@ bacon_pargs() {
 
     OPTIND=1
     while getopts "$optstr" opt; do
-        [[ $opt == ":" || $opt == "?" ]] && bacon_die "$HELP"
+        if [[ $opt == ":" || $opt == "?" ]]; then
+            # the HELP must be initialized by caller
+            bacon_warn "$HELP" || return 1
+        fi
         # shellcheck disable=SC2034
         __opt[$opt]=1
         # shellcheck disable=SC2034
         __arg[$opt]="$OPTARG"
     done
-    shift $((OPTIND - 1))
 }
 
 bacon_require_base() {

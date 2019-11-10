@@ -18,16 +18,8 @@ _isempty() {
     ! read -t 0 -ru "$1" &>/dev/null
 }
 
-_is_running() {
-    ps -p "$1" &>/dev/null
-}
-
-_tmpfd() {
-    basename <(:)
-}
-
 bacon_async_mq_init() {
-    local tmpfd="$(_tmpfd)"
+    local tmpfd="$(bacon_tmpfd)"
     BACON_ASYNC_MQ_FIFO="${BACON_ASYNC_MQ_FIFO:-/tmp/bacon-async-mq-$RANDOM-$RANDOM-$RANDOM.fifo}"
     # ensure tmp fifo is available
     [[ -p $BACON_ASYNC_MQ_FIFO ]] || {
@@ -59,22 +51,17 @@ bacon_async_del() {
 
 bacon_async_run() {
     [[ -n $BACON_ASYNC_MQ ]] || bacon_async_mq_init || return 1
-    local job cmd cb
 
-    # parse opts and args
-    OPTIND=1
-    while getopts "j:c:" opt; do
-        case $opt in
-            j) job="$OPTARG" ;;
-            c) cb="$OPTARG" ;;
-            ?) ;;
-        esac
-    done
+    # parse options
+    local HELP="Usage: ${FUNCNAME[0]} [-j|-c] [string] <cmds>"
+    local -A opts=() args=()
+    bacon_pargs opts args 'j:c:' "$@"
     shift $((OPTIND - 1))
     local cmd="$*"
-    [[ -n $job ]] || job="J-$RANDOM-$RANDOM-$RANDOM"
-    [[ -z ${BACON_ASYNC_JQ[$job]} && -z ${BACON_ASYNC_ANON_CALLBACK[$job]} ]] || return 0;
-    [[ -n $cb && -z ${BACON_ASYNC_RUN[$job]} ]] && BACON_ASYNC_ANON_CALLBACK[$job]="$cb"
+
+    [[ -n ${args[j]} ]] || args[j]="J-$RANDOM-$RANDOM-$RANDOM"
+    [[ -z ${BACON_ASYNC_JQ[${args[j]}]} && -z ${BACON_ASYNC_ANON_CALLBACK[${args[j]}]} ]] || return 0;
+    [[ -n ${args[c]} && -z ${BACON_ASYNC_RUN[${args[j]}]} ]] && BACON_ASYNC_ANON_CALLBACK["${args[j]}"]="${args[c]}"
 
     { {
         local IFS=$'\n'
@@ -82,10 +69,10 @@ bacon_async_run() {
         IFS=' '
         eval 'echo "${BASHPID}:${output[*]}"' >&"$BACON_ASYNC_MQ"
         # remind parent shell that the job is finished
-        if [[ -n $BACON_ASYNC_SIG ]] && _is_running "$BACON_ASYNC_PPID"; then
+        if [[ -n $BACON_ASYNC_SIG ]] && bacon_is_running "$BACON_ASYNC_PPID"; then
             kill -"${BACON_ASYNC_SIG}" "$BACON_ASYNC_PPID";
         fi
-    }& } &>/dev/null && BACON_ASYNC_JQ[$job]="$!" && BACON_ASYNC_JM[$!]="$job"
+    }& } &>/dev/null && BACON_ASYNC_JQ["${args[j]}"]="$!" && BACON_ASYNC_JM["$!"]="${args[j]}"
 
     # disown job if current shell is insteractive
     [[ $- != *i* ]] || disown $!
@@ -106,7 +93,7 @@ bacon_async_stop() {
     local jobs=()
     [[ $# == 0 ]] && jobs=("${!BACON_ASYNC_JQ[@]}") || jobs=("$@")
     for j in "${jobs[@]}"; do
-        if [[ -n ${BACON_ASYNC_JQ[$j]} ]] && _is_running "${BACON_ASYNC_JQ[$j]}"; then
+        if [[ -n ${BACON_ASYNC_JQ[$j]} ]] && bacon_is_running "${BACON_ASYNC_JQ[$j]}"; then
             kill -9 "${BACON_ASYNC_JQ[$j]}" && \
                 unset BACON_ASYNC_JM["${BACON_ASYNC_JQ[$j]}"] && unset BACON_ASYNC_JQ["$j"]
         fi
@@ -117,7 +104,7 @@ bacon_async_wait() {
     local pids=() runs=()
     [[ $# == 0 ]] && pids=("${BACON_ASYNC_JQ[@]}") || pids=("$@")
     for p in "${pids[@]}"; do
-        [[ -n $p && $p =~ [0-9]+ ]] && _is_running "$p" && runs+=("$p")
+        [[ -n $p && $p =~ [0-9]+ ]] && bacon_is_running "$p" && runs+=("$p")
     done
     wait "${runs[@]}" || echo "Terminated by SIG$(kill -l $?) signal."
 }
