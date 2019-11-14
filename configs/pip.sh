@@ -7,6 +7,7 @@ hash pip &>/dev/null || return 1
 bacon_export pip
 
 pip_upgrade() {
+    local pkg
     for pkg in $(pip list --outdate --format legacy | awk '{print $1}'); do
         sudo pip install --upgrade "${pkg}"
     done

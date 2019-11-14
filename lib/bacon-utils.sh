@@ -20,6 +20,7 @@ bacon_has_map() {
 # Assigns the selected set of escape mappings to the given associative array names.
 bacon_color_init() {
     local -a fg_clrs bg_clrs msc
+    local x
     fg_clrs=(black red green yellow blue magenta cyan grey darkgrey ltred ltgreen ltyellow ltblue ltmagenta ltcyan white)
     bg_clrs=($(IFS=,; eval "echo bg_{${fg_clrs[*]}}"))
     msc=(sgr0 bold dim smul blink rev invis)
@@ -53,7 +54,7 @@ bacon_color_init() {
 bacon_color_init --setaf BACON_COLOR --setab BACON_COLOR --misc BACON_COLOR
 
 bacon_set_color() {
-    local color
+    local color c
     for c in "$@"; do
         bacon_has_map BACON_COLOR "$c" && color+="${BACON_COLOR[$c]}"
     done
@@ -255,7 +256,7 @@ bacon_popts() {
     shift 4
     local -a soa=() loa=()
     local -A som=() lom=()
-    local sos los tmp m n
+    local sos los tmp o m n
 
     # construct optstrings
     for o in "${!__optstr[@]}"; do
@@ -311,6 +312,7 @@ bacon_require_base() {
     local cmd="$1"
     local msg="$2"
     shift 2
+    local obj
     for obj in "$@"; do
         "$cmd" "$obj" || miss+=("$obj")
     done
@@ -417,6 +419,7 @@ bacon_filter() {
     local -n __array="$1"
     local p="$2"
     shift 2
+    local arg
     for arg in "$@"; do
         [[ $arg =~ $p ]] && __array+=("$arg") || true
     done
@@ -431,6 +434,7 @@ bacon_map() {
     local -n __array="$1"
     local func="$2"
     shift 2
+    local i
     __array+=("$@")
     for i in "${__array[@]}"; do
         "$func" "__array[$i]"

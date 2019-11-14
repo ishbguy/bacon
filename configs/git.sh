@@ -59,6 +59,7 @@ if bacon_defined BACON_PROMPT_PS1_LAYOUT && bacon_definedf bacon_promptc; then
         brch="${brchi[1]//..*/}"
         # check whether the local repo is different from remote tracked repo
         [[ -n ${brchi[2]} && ${brchi[*]:2} =~ '[' ]] && brch+="${trki[${brchi[2]#[}]}${brchi[3]%]}"
+        local c
         local tmp=()
         for c in "${bstat[@]:1}"; do
             # prevent special chars to be expand

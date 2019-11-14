@@ -9,6 +9,7 @@ export BACON_MAIN_ABS_DIR="$(dirname "$BACON_MAIN_ABS_SRC")"
 
 bacon_init() {
     local BACON_LIB_DIR=("$BACON_MAIN_ABS_DIR")
+    local c
     for c in "$@"; do
         bacon_load "${c}.sh" || true
     done

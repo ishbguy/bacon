@@ -9,6 +9,7 @@ declare -ga BACON_PRECMD_TRAP=()
 declare -g  BACON_PRECMD_TRAP_SIG="${BACON_PRECMD_TRAP_SIG:-}"
 
 bacon_precmd_handler() {
+    local cmd
     for cmd in "${BACON_PRECMD_TRAP[@]}"; do
         eval "$cmd"
     done

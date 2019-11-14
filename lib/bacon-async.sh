@@ -42,6 +42,7 @@ bacon_async_add() {
 bacon_async_del() {
     [[ $# == 1 ]] || return 1
     local jobs=()
+    local j
     [[ $# == 0 ]] && jobs=("${!BACON_ASYNC_RUN[@]}") || jobs=("$@")
     for j in "${jobs[@]}"; do
         [[ -n $j && -n ${BACON_ASYNC_RUN[$j]} ]] && unset BACON_ASYNC_RUN["$j"]
@@ -81,6 +82,7 @@ bacon_async_run() {
 bacon_async_start() {
     [[ -n $BACON_ASYNC_MQ ]] || bacon_async_mq_init || return 1
     local jobs=()
+    local j
     [[ $# == 0 ]] && jobs=("${!BACON_ASYNC_RUN[@]}") || jobs=("$@")
     for j in "${jobs[@]}"; do
         if [[ -n ${BACON_ASYNC_RUN[$j]} ]]; then
@@ -91,6 +93,7 @@ bacon_async_start() {
 
 bacon_async_stop() {
     local jobs=()
+    local j
     [[ $# == 0 ]] && jobs=("${!BACON_ASYNC_JQ[@]}") || jobs=("$@")
     for j in "${jobs[@]}"; do
         if [[ -n ${BACON_ASYNC_JQ[$j]} ]] && bacon_is_running "${BACON_ASYNC_JQ[$j]}"; then
@@ -102,6 +105,7 @@ bacon_async_stop() {
 
 bacon_async_wait() {
     local pids=() runs=()
+    local p
     [[ $# == 0 ]] && pids=("${BACON_ASYNC_JQ[@]}") || pids=("$@")
     for p in "${pids[@]}"; do
         [[ -n $p && $p =~ [0-9]+ ]] && bacon_is_running "$p" && runs+=("$p")

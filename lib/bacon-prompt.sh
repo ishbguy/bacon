@@ -36,7 +36,7 @@ bacon_prompt_location() {
 
 bacon_prompt_counter() {
     local -A counters
-    local str=''
+    local str='' cnt
     for cnt in "${BACON_PROMPT_COUNTERS[@]}"; do
         # shellcheck disable=SC2155
         local nr="$(eval "$cnt")"
@@ -57,7 +57,7 @@ bacon_prompt_dollar() {
 }
 
 bacon_prompt_ps1() {
-    ps1=
+    local ps1 layout
     for layout in "${BACON_PROMPT_PS1_LAYOUT[@]}"; do
         bacon_definedf "$layout" && ps1+="$($layout)"
     done
