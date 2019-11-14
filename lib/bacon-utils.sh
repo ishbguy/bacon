@@ -242,6 +242,66 @@ bacon_pargs() {
     done
 }
 
+bacon_popts() {
+    local usage="Usage: ${FUNCNAME[0]} <opt-map> <arg-map> <remain-args-array> <optstr-map> [args...]"
+    bacon_ensure "[[ $# -ge 4 ]]" "$usage"
+    bacon_ensure "bacon_is_map $1 && bacon_is_map $2 && bacon_is_map $4" "$usage"
+    bacon_ensure "bacon_is_array $3" "$usage"
+
+    local -n __opts="$1"
+    local -n __args="$2"
+    local -n __rargs="$3"
+    local -n __optstr="$4"
+    shift 4
+    local -a soa=() loa=()
+    local -A som=() lom=()
+    local sos los tmp m n
+
+    # construct optstrings
+    for o in "${!__optstr[@]}"; do
+        if [[ $o =~ ^(:)?([a-zA-Z0-9]([^|]*)?)$ ]]; then
+            n="${BASH_REMATCH[1]}"; m="${BASH_REMATCH[2]}"
+            if [[ $m =~ ^[a-zA-Z0-9]$ ]]; then
+                soa+=("$m$n"); som["$m"]="x$n"
+            else
+                loa+=("$m$n"); lom["$m"]="x$n"
+            fi
+        elif [[ $o =~ ^(:)?([a-zA-Z0-9])\|([a-zA-Z0-9].*)$ ]]; then
+            soa+=("${BASH_REMATCH[2]}${BASH_REMATCH[1]}")
+            som["${BASH_REMATCH[2]}"]="x${BASH_REMATCH[1]}"
+            loa+=("${BASH_REMATCH[3]}${BASH_REMATCH[1]}")
+            lom["${BASH_REMATCH[3]}"]="x${BASH_REMATCH[1]}"
+        fi
+    done
+    sos="$(IFS= ; echo "${soa[*]}")"
+    los="$(IFS=,; echo "${loa[*]}")"
+
+    # parse options
+    tmp="$(getopt -o "$sos" --long "$los" -- "$@")"
+    [[ $? == 0 ]] || bacon_warn "getopt error..." || return 1
+    # quote tmp for prevent eating empty string
+    eval set -- "$tmp"
+    while true; do
+        if [[ $1 =~ ^--?([a-zA-Z].*)$ ]]; then
+            if [[ -n "${som[${BASH_REMATCH[1]}]}" || -n "${lom[${BASH_REMATCH[1]}]}" ]]; then
+                if [[ "${som[${BASH_REMATCH[1]}]}" != "x" && "${lom[${BASH_REMATCH[1]}]}" != "x" ]]; then
+                    __opts[${BASH_REMATCH[1]}]=1
+                    __args[${BASH_REMATCH[1]}]="$2"
+                    shift 2; continue
+                else
+                    __opts[${BASH_REMATCH[1]}]=1
+                    shift; continue
+                fi
+            fi
+        elif [[ $1 == '--' ]]; then
+            shift; break
+        else
+            bacon_warn "Internal error..." || return 1
+        fi
+    done
+    __rargs=("$@")
+}
+
 bacon_require_base() {
     local usage="Usage: ${FUNCNAME[0]} <func> <msg> [args...]"
     bacon_ensure "[[ $# -gt 2 ]]" "$usage"

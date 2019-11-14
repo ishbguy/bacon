@@ -332,6 +332,39 @@ EOF
     assert_failure
 }
 
+@test "bacon_popts" {
+    local -A opt=() arg=() optstr=()
+    local -a rargs=()
+    optstr[h]="short opt"
+    optstr[:v]="opt with arg"
+    optstr[long]="long opt"
+    optstr[:long-arg]="long opt with arg"
+    optstr[a|along]="short & long opt"
+    optstr[:b|blong]="short & long opts with arg"
+
+    run eval '(bacon_popts opt arg rargs optstr -h && [[ ${opt[h]} == 1 ]])'
+    assert_success
+    run eval '(bacon_popts opt arg rargs optstr -v test && [[ ${opt[v]} == 1 ]] && echo ${arg[v]})'
+    assert_output "test"
+    run eval '(bacon_popts opt arg rargs optstr --long && [[ ${opt[long]} == 1 ]])'
+    assert_success
+    run eval '(bacon_popts opt arg rargs optstr --long-arg test && [[ ${opt[long-arg]} == 1 ]] && echo ${arg[long-arg]})'
+    assert_output "test"
+    run eval '(bacon_popts opt arg rargs optstr -a && [[ ${opt[a]} == 1 ]])'
+    assert_success
+    run eval '(bacon_popts opt arg rargs optstr --along && [[ ${opt[along]} == 1 ]])'
+    assert_success
+    run eval '(bacon_popts opt arg rargs optstr -b test && [[ ${opt[b]} == 1 ]] && echo ${arg[b]})'
+    assert_output "test"
+    run eval '(bacon_popts opt arg rargs optstr --blong test && [[ ${opt[blong]} == 1 ]] && echo ${arg[blong]})'
+    assert_output "test"
+
+    run eval '(bacon_popts opt arg rargs optstr a -h b && [[ ${opt[h]} == 1 ]])'
+    assert_success
+    run eval '(bacon_popts opt arg rargs optstr a -h b && echo "${rargs[@]}")'
+    assert_output "a b"
+}
+
 @test "bacon_require_base" {
     is_exist() { [[ -e $1 ]]; }
     run bacon_require_base is_exist "file does not exist" xxx
