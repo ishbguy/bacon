@@ -138,7 +138,7 @@ bacon_async_reap() {
 bacon_async_handler() {
     [[ -n $BACON_ASYNC_MQ ]] || bacon_async_mq_init || return 1
     if ! _isempty "$BACON_ASYNC_MQ"; then
-        bacon_async_reap
+        while ! _isempty "$BACON_ASYNC_MQ"; do bacon_async_reap; done
     else
         bacon_async_start "${!BACON_ASYNC_RUN[@]}"
     fi
