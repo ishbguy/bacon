@@ -7,10 +7,6 @@ bacon_export module
 declare -g  BACON_CAP_OFF=''
 declare -gA BACON_MODULE=()
 
-bacon_encode_base() {
-    basename "$1" .sh | sed -r 's/[^0-9a-zA-Z]/_/g' | tr '[:lower:]' '[:upper:]'
-}
-
 bacon_cap_alias() {
     # alias -p | sed -r 's/=.*//g' | awk '{print $2}' | sort -d
     alias -p | awk 'BEGIN { PROCINFO["sorted_in"] = "@ind_str_asc" }
@@ -40,7 +36,7 @@ alias @start='bacon_cap_start'
 bacon_cap_start() {
     [[ -z $BACON_CAP_OFF ]] || return 0
     declare -g BACON_MODULE_TMP=$1
-    declare -g BACON_MODULE_TMP_ENCODE="$(bacon_encode_base "$BACON_MODULE_TMP")"
+    declare -g BACON_MODULE_TMP_ENCODE="$(basename "$BACON_MODULE_TMP" .sh | bacon_encode | bacon_toupper)"
     declare -g BEFORE_ALIAS="$(bacon_cap_alias)"
     declare -g BEFORE_FUNCS="$(bacon_cap_funcs)"
     declare -g BEFORE_VARS="$(bacon_cap_vars)"
@@ -63,6 +59,7 @@ bacon_cap_end() {
 }
 
 bacon_load_module() {
+    local d m
     for d in "$@"; do
         [[ -d $d ]] || continue
         local BACON_LIB_DIR=("$d")
@@ -82,6 +79,8 @@ bacon_load_module() {
             bacon_cap_start "$mod"
             bacon_load "$dir/$mod.sh"
             bacon_cap_end
+            # update PATH
+            [[ -d $d/$dir/bin ]] && export PATH="$PATH:$(bacon_abspath "$d/$dir/bin")" || true
         done
     done
 }

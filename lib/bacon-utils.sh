@@ -352,6 +352,7 @@ bacon_load() {
     # shellcheck disable=SC2155
     bacon_defined __BACON_LOADED_FILE || declare -gA __BACON_LOADED_FILE=()
 
+    local dir
     for dir in "${BACON_LIB_DIR[@]}"; do
         # shellcheck disable=SC1090,SC2034
         if [[ -f $dir/$1 ]]; then
