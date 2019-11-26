@@ -6,9 +6,10 @@
 
 export BACON_MAIN_ABS_SRC="$(readlink -f "${BASH_SOURCE[0]}")"
 export BACON_MAIN_ABS_DIR="$(dirname "$BACON_MAIN_ABS_SRC")"
+export BACON_CORE_ABS_DIR="$(readlink -f "$BACON_MAIN_ABS_DIR/../lib")"
 
 bacon_init() {
-    local BACON_LIB_DIR=("$BACON_MAIN_ABS_DIR")
+    local BACON_LIB_DIR=("$BACON_CORE_ABS_DIR")
     local c
     for c in "$@"; do
         bacon_load "${c}.sh" || true
@@ -17,7 +18,7 @@ bacon_init() {
 
 bacon_configure_defaults() {
     # Configurations for bacon-utils
-    BACON_LIB_DIR=("$BACON_MAIN_ABS_DIR")
+    BACON_LIB_DIR=("$BACON_CORE_ABS_DIR")
     BACON_NO_ENSURE="${BACON_NO_ENSURE:-yes}"
     BACON_DEBUG="${BACON_DEBUG:-}"
 
@@ -61,6 +62,6 @@ bacon_main() {
 
 # shellcheck disable=SC1090
 # We must source bacon-utils.sh first for all tools it provide
-source "$BACON_MAIN_ABS_DIR/bacon-utils.sh" && bacon_main || return 1
+source "$BACON_CORE_ABS_DIR/bacon-utils.sh" && bacon_main || return 1
 
 # vim:set ft=sh ts=4 sw=4:

@@ -6,6 +6,6 @@ export BACON_BASHRC_ABS_SRC="$(readlink -f "${BASH_SOURCE[0]}")"
 export BACON_BASHRC_ABS_DIR="$(dirname "$BACON_BASHRC_ABS_SRC")"
 
 # shellcheck disable=SC1090
-source "$BACON_BASHRC_ABS_DIR/lib/bacon-main.sh"
+source "$BACON_BASHRC_ABS_DIR/bin/bacon-main.sh"
 
 # vim:set ft=sh ts=4 sw=4:
