@@ -15,18 +15,18 @@ load bacon-helper
     assert_output ""
 }
 
-@test "bacon_printc" {
-    run bacon_printc "test"
+@test "bacon_putc" {
+    run bacon_putc "test"
     assert_success
     assert_match "$(grep -oE '[0-9]+' <<<"$BACON_COLOR[default]")"
 
     for color in "${!BACON_COLOR[@]}"; do
-        run bacon_printc $color "test"
+        run bacon_putc $color "test"
         assert_success
         assert_match "$(grep -oE '[0-9]+' <<<"$BACON_COLOR[$color]")"
     done
 
-    run bacon_printc red bold test
+    run bacon_putc red bold test
     assert_success
     assert_match "$(grep -oE '[0-9]+' <<<"$BACON_COLOR[red]")"
     assert_match "$(grep -oE '[0-9]+' <<<"$BACON_COLOR[bold]")"

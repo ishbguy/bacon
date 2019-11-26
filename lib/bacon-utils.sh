@@ -61,14 +61,12 @@ bacon_set_color() {
     printf '%s' "$color"
 }
 
-bacon_printc() {
-    local color=${BACON_COLOR[default]}
-    if bacon_has_map BACON_COLOR "$1"; then
-        color="${BACON_COLOR[$1]}"; shift
-        if bacon_has_map BACON_COLOR "$1"; then
-            color+="${BACON_COLOR[$1]}"; shift
-        fi
-    fi
+bacon_putc() {
+    local color
+    while bacon_has_map BACON_COLOR "$1"; do
+        color+="${BACON_COLOR[$1]}"; shift
+    done
+    color="${color:-${BACON_COLOR[default]}}"
     local IFS=' '
     printf "${color}%s${BACON_COLOR[reset]}\n" "$*"
 }
@@ -83,16 +81,16 @@ bacon_debug() {
 }
 
 bacon_info() {
-    bacon_printc yellow  "[INFO]" "$@" >&2
+    bacon_putc yellow  "[INFO]" "$@" >&2
 }
 
 bacon_warn() {
-    bacon_printc red "[WARN]" "$@" >&2
+    bacon_putc red "[WARN]" "$@" >&2
     return 1
 }
 
 bacon_die() {
-    bacon_printc red "[ERROR]" "$@" >&2
+    bacon_putc red "[ERROR]" "$@" >&2
     exit 1
 }
 
