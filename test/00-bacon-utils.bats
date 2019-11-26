@@ -365,6 +365,21 @@ EOF
     assert_output "a b"
 }
 
+@test "bacon_popts_help" {
+    local -A optstr=()
+    optstr[h]="short opt"
+    optstr[:v]="opt with arg"
+    optstr[long]="long opt"
+    optstr[:long-arg]="long opt with arg"
+    optstr[a|along]="short & long opt"
+    optstr[:b|blong]="short & long opts with arg"
+
+    run bacon_popts_help optstr TEST
+    assert_match TEST
+    assert_match '--long '
+    assert_match '--blong.*<arg>'
+}
+
 @test "bacon_require_base" {
     is_exist() { [[ -e $1 ]]; }
     run bacon_require_base is_exist "file does not exist" xxx

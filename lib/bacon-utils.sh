@@ -303,6 +303,45 @@ bacon_popts() {
     __rargs=("$@")
 }
 
+bacon_popts_help() {
+    local usage="Usage: ${FUNCNAME[0]} <optstr-map> [args...]"
+    bacon_ensure "[[ $# -ge 1 ]] && bacon_is_map $1" "$usage"
+
+    local -n __optstr="$1"; shift
+    local -A om=() am=()
+    local o m a len
+    for o in "${!__optstr[@]}"; do
+        if [[ $o =~ ^(:)?([a-zA-Z0-9]([^|]*)?)$ ]]; then
+            m="${BASH_REMATCH[2]}"
+            [[ -n ${BASH_REMATCH[1]} ]] && a="<arg>" || a=""
+            if [[ $m =~ ^[a-zA-Z0-9]$ ]]; then
+                om["-$m"]="${__optstr[$o]}"
+                am["-$m"]="$a"
+            else
+                om["     --$m"]="${__optstr[$o]}"
+                am["     --$m"]="$a"
+            fi
+        elif [[ $o =~ ^(:)?([a-zA-Z0-9])\|([a-zA-Z0-9].*)$ ]]; then
+            [[ -n ${BASH_REMATCH[1]} ]] && a="<arg>" || a=""
+            om["-${BASH_REMATCH[2]} | --${BASH_REMATCH[3]}"]="${__optstr[$o]}"
+            am["-${BASH_REMATCH[2]} | --${BASH_REMATCH[3]}"]="$a"
+        fi
+    done
+
+    len=0
+    for o in "${!om[@]}"; do
+        (( ${#o} > len )) && len="${#o}"
+    done
+
+    local help=$(cat <<EOF
+$(if [[ $# -gt 0 ]]; then bacon_puts "$@"; fi)
+Options:
+$(for o in "${!om[@]}"; do printf "\t%-${len}s%6s\t%s\n" "$o" "${am[$o]}" "${om[$o]}"; done)
+EOF
+)
+    echo "$help"
+}
+
 bacon_require_base() {
     local usage="Usage: ${FUNCNAME[0]} <func> <msg> [args...]"
     bacon_ensure "[[ $# -gt 2 ]]" "$usage"
