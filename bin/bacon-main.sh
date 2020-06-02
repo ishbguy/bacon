@@ -23,7 +23,7 @@ bacon_configure_defaults() {
     BACON_DEBUG="${BACON_DEBUG:-}"
 
     # Configurations for bacon-module
-    declare -ga BACON_MOD_BUILTIN_DIR=("$BACON_MAIN_ABS_DIR/../configs")
+    declare -ga BACON_MOD_BUILTIN_DIR=("$BACON_MAIN_ABS_DIR/../conf.d")
     declare -ga BACON_MOD_USER_DIR=("$HOME/.bacon" "$HOME/.bash-configs")
     BACON_CAP_OFF="${BACON_CAP_OFF:-yes}"
 
