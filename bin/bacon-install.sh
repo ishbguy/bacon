@@ -18,7 +18,7 @@ bacon_install() {
     done
 }
 
-[[ ${FUNCNAME[0]} == "main" ]] \
+[[ ${FUNCNAME[0]} == "main" || ${FUNCNAME[0]} == "" ]] \
     && bacon_install "$@"
 
 # vim:set ft=sh ts=4 sw=4:
