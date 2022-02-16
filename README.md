@@ -24,12 +24,15 @@ A **ba**sh  **con**figuration framework.
 + Easy to add pre-command functions.
 + Easy to add customized configuration files.
 + Colorful, configurable and pragmatic PS1 prompt.
-+ Use [`bag`](https://github.com/ishbguy/bag) to manage package or plugin.
++ Integrates [`bag`](https://github.com/ishbguy/bag) to manage package or plugin.
 
 ## :straight_ruler: Prerequisite
 
 > + `bash` 4.2 or later
 > + `git`
+> + `sed`
+> + `awk`
+> + `diff`
 
 ## :rocket: Installation
 
