@@ -7,7 +7,6 @@
 export BACON_MAIN_ABS_SRC="$(readlink -f "${BASH_SOURCE[0]}")"
 export BACON_MAIN_ABS_DIR="$(dirname "$BACON_MAIN_ABS_SRC")"
 export BACON_CORE_ABS_DIR="$(readlink -f "$BACON_MAIN_ABS_DIR/../lib")"
-export BACON_CURR_JOBS_FILE="/tmp/$BASHPID-$RANDOM-$RANDOM-$RANDOM.jobs"
 
 bacon_init() {
     local BACON_LIB_DIR=("$BACON_CORE_ABS_DIR")
@@ -15,6 +14,15 @@ bacon_init() {
     for c in "$@"; do
         bacon_load "${c}.sh" || true
     done
+}
+jobs_count() { echo "$BACON_JOBS"; }
+export_ps1() { export PS1="$*"; }
+bacon_prompt() {
+    case $BACON_PROMPT_TYPE in
+        normal) export PS1="$(bacon_prompt_ps1)" ;;
+        async)  bacon_async_run -c export_ps1 bacon_prompt_ps1 ;;
+        *)      export PS1='[\A][\u@\h:\W]\$ ';;
+    esac
 }
 
 bacon_configure_defaults() {
@@ -28,23 +36,17 @@ bacon_configure_defaults() {
     declare -ga BACON_MOD_USER_DIR=("$HOME/.bacon" "$HOME/.bash-configs")
     BACON_CAP_OFF="${BACON_CAP_OFF:-yes}"
 
+    # for bacon-async
+    bacon_async_trap SIGUSR2
+
     # for bacon-precmd
     PROMPT_COMMAND=bacon_precmd
-    BACON_PRECMD=('export LAST_STATUS=$?' 'export BACON_JOBS="$(jobs -p | wc -l)"')
-    jobs_count() { echo "$BACON_JOBS"; }
-    export_ps1() { export PS1="$*"; }
-
-    # for bacon-precmd with signal trapped
-    BACON_PRECMD_TRAP_SIG=SIGUSR1
-    BACON_PRECMD_TRAP=('export_ps1 "$(bacon_prompt_ps1)"')
-    # BACON_PRECMD+=('export_ps1 "$(bacon_prompt_ps1)"')
-
-    # for bacon-precmd with bacon-async
-    # bacon_async_trap SIGUSR2
-    # BACON_PRECMD+=('bacon_async_handler')
-    # bacon_async_add bacon_prompt bacon_prompt_ps1 export_ps1
+    BACON_PRECMD+=('export LAST_STATUS=$?')
+    BACON_PRECMD+=('export BACON_JOBS="$(jobs -p | wc -l)"')
+    BACON_PRECMD+=('bacon_prompt')
 
     # for bacon-prompt
+    BACON_PROMPT_TYPE=normal
     BACON_PROMPT_PS1_LAYOUT=(
         bacon_prompt_last_status
         bacon_prompt_time
