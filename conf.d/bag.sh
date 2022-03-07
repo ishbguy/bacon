@@ -41,8 +41,6 @@ fi
 [[ -d $BAGS_DIR ]] || mkdir -p "$BAGS_DIR"
 
 bag base "$BAGS_DIR"
-bag plug "gh:ishbguy/baux"
-bag plug "gh:ishbguy/license"
 bag load
 
 # vim:set ft=sh ts=4 sw=4:
