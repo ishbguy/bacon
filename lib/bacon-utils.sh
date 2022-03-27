@@ -482,7 +482,7 @@ bacon_map() {
 bacon_export() {
     local src="$(bacon_abspath "${BASH_SOURCE[1]}")"
     local dir="$(dirname "$src")"
-    local -u ns="${1:-$(basename "$src" .sh | bacon_encode)}"
+    local -u ns="${1:-$(basename "$src" .bash | bacon_encode)}"
 
     # source export guard
     # eval "[[ -z \$BACON_SOURCE_${ns}_ABS_SRC ]]" || return 1

@@ -20,64 +20,6 @@ load bacon-helper
     assert_match "$(grep -oE '[0-9]+' <<<"${BACON_COLOR[red]}")"
 }
 
-@test "bacon_prompt_last_status" {
-    local LAST_STATUS=0
-    run bacon_prompt_last_status
-    assert_match "$(grep -oE '[0-9]+' <<<"${BACON_COLOR[green]}")"
-    LAST_STATUS=1
-    run bacon_prompt_last_status
-    assert_match "$(grep -oE '[0-9]+' <<<"${BACON_COLOR[red]}")"
-
-    local -A BACON_PROMPT_COLOR=()
-    BACON_PROMPT_COLOR[last_ok]=blue
-    LAST_STATUS=0
-    run bacon_prompt_last_status
-    assert_match "$(grep -oE '[0-9]+' <<<"${BACON_COLOR[blue]}")"
-    BACON_PROMPT_COLOR[last_fail]=yellow
-    LAST_STATUS=1
-    run bacon_prompt_last_status
-    assert_match "$(grep -oE '[0-9]+' <<<"${BACON_COLOR[yellow]}")"
-
-    run bacon_prompt_last_status
-    assert_match '&'
-    local -A BACON_PROMPT_CHARS=()
-    BACON_PROMPT_CHARS[last_status]='@'
-    run bacon_prompt_last_status
-    assert_match '@'
-}
-
-@test "bacon_prompt_time" {
-    run bacon_prompt_time
-    assert_match "$(grep -oE '[0-9]+' <<<"${BACON_COLOR[green]}")"
-    assert_match 'A'
-
-    local -A BACON_PROMPT_COLOR=()
-    BACON_PROMPT_COLOR[time]=cyan
-    run bacon_prompt_time
-    assert_match "$(grep -oE '[0-9]+' <<<"${BACON_COLOR[cyan]}")"
-
-    local -A BACON_PROMPT_CHARS=()
-    BACON_PROMPT_CHARS[time]=B
-    run bacon_prompt_time
-    assert_match 'B'
-}
-
-@test "bacon_prompt_location" {
-    run bacon_prompt_location
-    assert_match "$(grep -oE '[0-9]+' <<<"${BACON_COLOR[bule]}")"
-    assert_match 'u.*h.*W'
-
-    local -A BACON_COLOR=()
-    BACON_COLOR[location]=green
-    run bacon_prompt_location
-    assert_match "$(grep -oE '[0-9]+' <<<"${BACON_COLOR[green]}")"
-
-    local -A BACON_PROMPT_CHARS=()
-    BACON_PROMPT_CHARS[location]=XXXXXX
-    run bacon_prompt_location
-    assert_match 'XXXXXX'
-}
-
 @test "bacon_prompt_counter" {
     local BACON_PROMPT_COUNTERS=()
     run bacon_prompt_counter
@@ -100,31 +42,88 @@ load bacon-helper
     assert_match "$(grep -oE '[0-9]+' <<<"${BACON_COLOR[black]}")"
 }
 
-@test "bacon_prompt_dollar" {
-    run bacon_prompt_dollar
-    assert_match "$(grep -oE '[0-9]+' <<<"${BACON_COLOR[blue]}")"
-    assert_match '\$'
+@test "bacon_prompt_format_expand" {
+    # test null string
+    run bacon_prompt_format_expand ''
+    assert_success
+    assert_match '^$'
+    run bacon_prompt_format_expand '#{test}'
+    assert_success
+    assert_match '^$'
 
-    local -A BACON_PROMPT_COLOR=()
-    BACON_PROMPT_COLOR[dollar]=cyan
-    run bacon_prompt_dollar
-    assert_match "$(grep -oE '[0-9]+' <<<"${BACON_COLOR[cyan]}")"
+    # test var expand
+    BACON_PROMPT_INFO[one]='1'
+    run bacon_prompt_format_expand '#{one}'
+    assert_success
+    assert_match '1'
+    BACON_PROMPT_INFO[two]='2'
+    run bacon_prompt_format_expand '#{one}#{two}'
+    assert_success
+    assert_match '12'
+    run bacon_prompt_format_expand '#{one}xxx#{two}'
+    assert_success
+    assert_match '1xxx2'
 
-    local -A BACON_PROMPT_CHARS=()
-    BACON_PROMPT_CHARS[dollar]=D
-    run bacon_prompt_dollar
-    assert_match 'D'
+    # test cmd expand
+    run bacon_prompt_format_expand '#(echo 1)'
+    assert_success
+    assert_match '^1$'
+    run bacon_prompt_format_expand '#(echo {1,2})'
+    assert_success
+    assert_match '^1 2$'
+    run bacon_prompt_format_expand '#(echo $(echo 1))'
+    assert_success
+    assert_match '^1$'
+    run bacon_prompt_format_expand '#(cmd-not-exist)'
+    assert_success
+    assert_match '^$'
+    run bacon_prompt_format_expand 'x#((true)x'
+    assert_success
+    assert_equal 'x#((true)x' $output
+    run bacon_prompt_format_expand 'x#(true))x'
+    assert_success
+    assert_equal 'x)x' $output
+
+    # test color expand
+    for color in "${!BACON_COLOR[@]}"; do
+        run bacon_prompt_format_expand "#[$color]"
+        assert_success
+        assert_match "$(grep -oE '[0-9]+' <<<"${BACON_COLOR[$color]}")"
+    done
+
+    # test mix expand
+    BACON_PROMPT_INFO[test]='test'
+    BACON_PROMPT_COLOR[test]='green'
+    BACON_PROMPT_INFO[ONE]='ONE'
+    BACON_PROMPT_COLOR[ONE]='green'
+    run bacon_prompt_format_expand '0#{test}#{ONE}#(echo color)#[red]'
+    assert_success
+    assert_match "^0.*test.*ONE.*color.*$"
+    assert_match "$(grep -oE '[0-9]+' <<<"${BACON_COLOR[red]}")"
+    assert_match "$(grep -oE '[0-9]+' <<<"${BACON_COLOR[green]}")"
+
+    run bacon_prompt_format_expand '#12'
+    assert_success
+    assert_match '^#12$'
+    run bacon_prompt_format_expand '#12#{none}#'
+    assert_success
+    assert_match '^#12#$'
 }
 
 @test "bacon_prompt_ps1" {
-    local BACON_PROMPT_PS1_LAYOUT=()
+    local -A BACON_PROMPT_INFO
+    local -A BACON_PROMPT_COLOR
+    local BACON_PROMPT_FORMAT
+    BACON_PROMPT_INFO[one]="11"
+    BACON_PROMPT_COLOR[one]="red"
+    BACON_PROMPT_INFO[two]="#[green]22"
+    BACON_PROMPT_INFO[three]='#(echo 3x3)'
+    BACON_PROMPT_COLOR[three]="yellow"
+    BACON_PROMPT_FORMAT='x#{one}#{two}#{three}#(echo cmd)x'
     run bacon_prompt_ps1
     assert_success
-    assert_match '\$'
-    one() { echo one; }
-    two() { echo two; }
-    BACON_PROMPT_PS1_LAYOUT=(one two)
-    run bacon_prompt_ps1
-    assert_success
-    assert_match 'onetwo'
+    assert_match "^x.*11.*22.*3x3.*cmdx$"
+    assert_match "$(grep -oE '[0-9]+' <<<"${BACON_COLOR[red]}")"
+    assert_match "$(grep -oE '[0-9]+' <<<"${BACON_COLOR[green]}")"
+    assert_match "$(grep -oE '[0-9]+' <<<"${BACON_COLOR[yellow]}")"
 }

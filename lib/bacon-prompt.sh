@@ -6,7 +6,8 @@ bacon_export prompt
 declare -ga BACON_PROMPT_PS1_LAYOUT=()
 declare -ga BACON_PROMPT_COUNTERS=()
 declare -gA BACON_PROMPT_COLOR=()
-declare -gA BACON_PROMPT_CHARS=()
+declare -gA BACON_PROMPT_INFO=()
+declare -g  BACON_PROMPT_FORMAT
 
 bacon_promptc() {
     local color
@@ -16,20 +17,6 @@ bacon_promptc() {
     color="${color:-${BACON_COLOR[default]}}"
     local IFS=' '
     printf '\[%s\]%s\[\033[00m\]\n' "$color" "$*"
-}
-
-bacon_prompt_last_status() {
-    local color="${BACON_PROMPT_COLOR[last_fail]:-red}"
-    [[ $LAST_STATUS -eq 0 ]] && color="${BACON_PROMPT_COLOR[last_ok]:-green}"
-    bacon_promptc "$color" "${BACON_PROMPT_CHARS[last_status]:-&}"
-}
-
-bacon_prompt_time() {
-    bacon_promptc "${BACON_PROMPT_COLOR[time]:-green}" "${BACON_PROMPT_CHARS[time]:-[\A]}"
-}
-
-bacon_prompt_location() {
-    bacon_promptc "${BACON_PROMPT_COLOR[location]:-blue}" "${BACON_PROMPT_CHARS[location]:-[\u@\h:\W]}"
 }
 
 bacon_prompt_counter() {
@@ -50,16 +37,75 @@ bacon_prompt_counter() {
     [[ -n $str ]] && bacon_promptc "${BACON_PROMPT_COLOR[counter]:-yellow}" "[$str]"
 }
 
-bacon_prompt_dollar() {
-    bacon_promptc "${BACON_PROMPT_COLOR[dollar]:-blue}" "${BACON_PROMPT_CHARS[dollar]:-\$ }"
+bacon_prompt_format_expand() {
+    local fmt=$1
+    local expanded brackets braces squares cmd name color i j k
+    for ((i = 0; i < ${#fmt}; i++)); do
+        [[ ${fmt:$i:1} != "#" ]] && expanded+="${fmt:$i:1}" && continue
+        ((k = i, i++))
+        while true; do
+        case ${fmt:$i:1} in
+        "(")
+            ((brackets = 1, i++))
+            for ((j = i; j  < ${#fmt}; j++)); do
+                case ${fmt:$j:1} in
+                    "(") ((brackets++)) ;;
+                    ")") ((--brackets)); [[ $brackets -eq 0 ]] && break ;;
+                esac
+            done
+            [[ ${fmt:$j:1} != ")" || $brackets -ne 0 ]] && break
+            cmd="${fmt:$i:$((j-i))}"
+            expanded+="$(eval "$cmd" 2>/dev/null)"
+            ((i = j))
+            ;;
+        "{")
+            ((braces = 1, i++))
+            for ((j = i; j  < ${#fmt}; j++)); do
+                case ${fmt:$j:1} in
+                    "{") ((braces++)) ;;
+                    "}") ((--braces)); [[ $braces -eq 0 ]] && break ;;
+                esac
+            done
+            [[ ${fmt:$j:1} != "}" || $braces -ne 0 ]] && break
+            name="${fmt:$i:$((j-i))}"
+            if [[ -n ${BACON_PROMPT_COLOR[$name]} ]]; then
+                # embedded color & style
+                expanded+="$(eval "echo '$(bacon_promptc "${BACON_PROMPT_COLOR[$name]}" "${BACON_PROMPT_INFO[$name]}")'" 2>/dev/null)"
+            else
+                expanded+="$(eval "echo '${BACON_PROMPT_INFO[$name]}'" 2>/dev/null)"
+            fi
+            ((i = j))
+            ;;
+        "[")
+            ((squares = 1, i++))
+            for ((j = i; j  < ${#fmt}; j++)); do
+                case ${fmt:$j:1} in
+                    "[") ((squares++)) ;;
+                    "]") ((--squares)); [[ $squares -eq 0 ]] && break ;;
+                esac
+            done
+            [[ ${fmt:$j:1} != "]" || $squares -ne 0 ]] && break
+            color="${fmt:$i:$((j-i))}"
+            expanded+="$(eval echo "${BACON_COLOR[$color]}" 2>/dev/null)"
+            ((i = j))
+            ;;
+        *)  expanded+="#${fmt:$i:1}" ;;
+        esac
+        break
+        done
+        if [[ $j -eq ${#fmt} ]]; then
+            expanded+="${fmt:$k}"
+            ((i = ${#fmt}))
+        fi
+    done
+    echo "$expanded"
 }
 
 bacon_prompt_ps1() {
-    local ps1 layout
-    for layout in "${BACON_PROMPT_PS1_LAYOUT[@]}"; do
-        bacon_definedf "$layout" && ps1+="$($layout)"
-    done
-    ps1+="$(bacon_prompt_dollar)"
+    local ps1 fmt
+    fmt="$(bacon_prompt_format_expand "${BACON_PROMPT_FORMAT}")"
+    fmt="$(bacon_prompt_format_expand "${fmt}")"
+    ps1="$(bacon_prompt_format_expand "${fmt}")"
     echo "$ps1"
 }
 

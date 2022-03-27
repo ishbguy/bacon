@@ -642,8 +642,8 @@ EOF
 }
 
 @test "bacon_export" {
-    run eval '(bacon_export && [[ -n $BACON_SOURCE_BATS_EXEC_TEST_ABS_SRC ]] && echo "${BACON_SOURCE_BATS_EXEC_TEST_ABS_SRC}")'
-    assert_match "bats-exec-test$"
+    run eval '(bacon_export && [[ -n $BACON_SOURCE_TEST_FUNCTIONS_ABS_SRC ]] && echo "${BACON_SOURCE_TEST_FUNCTIONS_ABS_SRC}")'
+    assert_match "test_functions.bash$"
     run bacon_export test
     assert_success
     run bacon_export one two

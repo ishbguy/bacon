@@ -32,9 +32,11 @@ if bacon_defined BACON_PROMPT_PS1_LAYOUT && bacon_definedf bacon_promptc; then
         for c in "${!change[@]}"; do
             brch+=":${c}${change[$c]}"
         done
-        bacon_promptc "${BACON_PROMPT_COLOR[git]:-magenta}" "[$brch]"
+        echo "[$brch]"
     }
-    BACON_PROMPT_PS1_LAYOUT+=(bash_prompt_git_branch)
+    BACON_PROMPT_INFO[git]='#(bash_prompt_git_branch)'
+    BACON_PROMPT_COLOR[git]='magenta'
+    BACON_PROMPT_FORMAT="$(sed -r 's/(#\{umark\})/#{git}\1/' <<<"$BACON_PROMPT_FORMAT")"
 fi
 
 # vim:set ft=sh ts=4 sw=4:
