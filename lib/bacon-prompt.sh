@@ -46,8 +46,7 @@ bacon_prompt_format_expand() {
         while true; do
         case ${fmt:$i:1} in
         "(")
-            ((brackets = 1, i++))
-            for ((j = i; j  < ${#fmt}; j++)); do
+            for ((brackets = 1, i++, j = i; j  < ${#fmt}; j++)); do
                 case ${fmt:$j:1} in
                     "(") ((brackets++)) ;;
                     ")") ((--brackets)); [[ $brackets -eq 0 ]] && break ;;
@@ -59,8 +58,7 @@ bacon_prompt_format_expand() {
             ((i = j))
             ;;
         "{")
-            ((braces = 1, i++))
-            for ((j = i; j  < ${#fmt}; j++)); do
+            for ((braces = 1, i++, j = i; j  < ${#fmt}; j++)); do
                 case ${fmt:$j:1} in
                     "{") ((braces++)) ;;
                     "}") ((--braces)); [[ $braces -eq 0 ]] && break ;;
@@ -77,8 +75,7 @@ bacon_prompt_format_expand() {
             ((i = j))
             ;;
         "[")
-            ((squares = 1, i++))
-            for ((j = i; j  < ${#fmt}; j++)); do
+            for ((squares = 1, i++, j = i; j  < ${#fmt}; j++)); do
                 case ${fmt:$j:1} in
                     "[") ((squares++)) ;;
                     "]") ((--squares)); [[ $squares -eq 0 ]] && break ;;
@@ -102,11 +99,11 @@ bacon_prompt_format_expand() {
 }
 
 bacon_prompt_ps1() {
-    local ps1 fmt
-    fmt="$(bacon_prompt_format_expand "${BACON_PROMPT_FORMAT}")"
-    fmt="$(bacon_prompt_format_expand "${fmt}")"
-    ps1="$(bacon_prompt_format_expand "${fmt}")"
-    echo "$ps1"
+    local fmt="${BACON_PROMPT_FORMAT}"
+    while [[ $fmt =~ \#[\[\{\(] ]]; do
+        fmt="$(bacon_prompt_format_expand "${fmt}")"
+    done
+    echo "$fmt"
 }
 
 # vim:set ft=sh ts=4 sw=4:
