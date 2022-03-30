@@ -738,3 +738,14 @@ EOF
     assert_success
     assert_output '<1> <2>'
 }
+
+@test "bacon_quote" {
+    local ONE=1 TWO='$ONE'
+    run bacon_quote "$TWO"
+    assert_success
+    assert_output "'\$ONE'"
+    run eval bacon_quote "$TWO"
+    assert_success
+    assert_output "'1'"
+}
+
