@@ -38,63 +38,39 @@ bacon_prompt_counter() {
 }
 
 bacon_prompt_format_expand() {
-    local fmt=$1
-    local expanded brackets braces squares cmd name color i j k
+    local fmt=$1 local expanded ctx left sp i j k
+    local -A pairs=(["("]=")" ["{"]="}" ["["]="]")
+    local -A cmds=(["("]="__run" ["{"]="__replace" ["["]="__paint")
+    __run() { (eval "$@" 2>/dev/null) || true ; }
+    __paint() { echo "${BACON_COLOR[$1]}" ; }
+    __replace() {
+        if [[ -n ${BACON_PROMPT_COLOR[$1]} ]]; then
+                # embedded color & style
+                bacon_promptc "${BACON_PROMPT_COLOR[$1]}" "${BACON_PROMPT_INFO[$1]}"
+            else
+                echo "${BACON_PROMPT_INFO[$1]}"
+        fi
+    }
     for ((i = 0; i < ${#fmt}; i++)); do
         [[ ${fmt:$i:1} != "#" ]] && expanded+="${fmt:$i:1}" && continue
-        ((k = i, i++))
-        while true; do
-        case ${fmt:$i:1} in
-        "(")
-            for ((brackets = 1, i++, j = i; j  < ${#fmt}; j++)); do
+        ((k = i, ++i)) && left="${fmt:$i:1}"
+        # use the while loop to control the case statement
+        while true; do case $left in
+        "("|"{"|"[")
+            for ((sp = 1, i++, j = i; j  < ${#fmt}; j++)); do
                 case ${fmt:$j:1} in
-                    "(") ((brackets++)) ;;
-                    ")") ((--brackets)); [[ $brackets -eq 0 ]] && break ;;
+                    "$left") ((sp++)) ;;
+                    "${pairs[$left]}") ((--sp)); [[ $sp -eq 0 ]] && break ;;
                 esac
             done
-            [[ ${fmt:$j:1} != ")" || $brackets -ne 0 ]] && break
-            cmd="${fmt:$i:$((j-i))}"
-            expanded+="$(eval "$cmd" 2>/dev/null)"
-            ((i = j))
-            ;;
-        "{")
-            for ((braces = 1, i++, j = i; j  < ${#fmt}; j++)); do
-                case ${fmt:$j:1} in
-                    "{") ((braces++)) ;;
-                    "}") ((--braces)); [[ $braces -eq 0 ]] && break ;;
-                esac
-            done
-            [[ ${fmt:$j:1} != "}" || $braces -ne 0 ]] && break
-            name="${fmt:$i:$((j-i))}"
-            if [[ -n ${BACON_PROMPT_COLOR[$name]} ]]; then
-                # embedded color & style
-                expanded+="$(eval "echo '$(bacon_promptc "${BACON_PROMPT_COLOR[$name]}" "${BACON_PROMPT_INFO[$name]}")'" 2>/dev/null)"
-            else
-                expanded+="$(eval "echo '${BACON_PROMPT_INFO[$name]}'" 2>/dev/null)"
-            fi
-            ((i = j))
-            ;;
-        "[")
-            for ((squares = 1, i++, j = i; j  < ${#fmt}; j++)); do
-                case ${fmt:$j:1} in
-                    "[") ((squares++)) ;;
-                    "]") ((--squares)); [[ $squares -eq 0 ]] && break ;;
-                esac
-            done
-            [[ ${fmt:$j:1} != "]" || $squares -ne 0 ]] && break
-            color="${fmt:$i:$((j-i))}"
-            expanded+="$(eval echo "${BACON_COLOR[$color]}" 2>/dev/null)"
-            ((i = j))
-            ;;
+            [[ ${fmt:$j:1} != "${pairs[$left]}" || $sp -ne 0 ]] && break
+            ctx="${fmt:$i:$((j-i))}" && ((i = j))
+            expanded+="$(eval "${cmds[$left]}" "$ctx")" ;;
         *)  expanded+="#${fmt:$i:1}" ;;
-        esac
-        break
-        done
-        if [[ $j -eq ${#fmt} ]]; then
-            expanded+="${fmt:$k}"
-            ((i = ${#fmt}))
-        fi
+        esac; break; done
+        [[ $j -eq ${#fmt} ]] && ((i = ${#fmt})) && expanded+="${fmt:$k}"
     done
+    unset __run __paint __replace
     echo "$expanded"
 }
 
