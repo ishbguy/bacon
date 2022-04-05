@@ -1,0 +1,17 @@
+BACON_PROMPT_INFO[status]='#([[ $LAST_STATUS -eq 0 ]] && echo "#[green]" || echo "#[red]")&'
+BACON_PROMPT_COLOR[status]='default'
+BACON_PROMPT_INFO[time]='[\A]'
+BACON_PROMPT_COLOR[time]='green'
+BACON_PROMPT_INFO[location]='[\u@\h:\W]'
+BACON_PROMPT_COLOR[location]='blue'
+BACON_PROMPT_INFO[counters]='#(bacon_prompt_counter)'
+BACON_PROMPT_COLOR[counters]='yellow'
+BACON_PROMPT_INFO[umark]='\$'
+BACON_PROMPT_COLOR[umark]='blue'
+BACON_PROMPT_INFO[space]=' '
+BACON_PROMPT_COLOR[space]='default'
+BACON_PROMPT_INFO[newline]='\n'
+BACON_PROMPT_COLOR[newline]='default'
+BACON_PROMPT_FORMAT='#{status}#{time}#{location}#{counters}#{umark}#{space}'
+BACON_PROMPT_COUNTERS+=('dirs -p | tail -n +2 | wc -l')
+BACON_PROMPT_COUNTERS+=('jobs_count')

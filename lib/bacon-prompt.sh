@@ -8,6 +8,8 @@ declare -ga BACON_PROMPT_COUNTERS=()
 declare -gA BACON_PROMPT_COLOR=()
 declare -gA BACON_PROMPT_INFO=()
 declare -g  BACON_PROMPT_FORMAT
+declare -g  BACON_PROMPT_THEME
+declare -ga BACON_PROMPT_THEME_DIR=()
 
 bacon_promptc() {
     local color
@@ -35,6 +37,16 @@ bacon_prompt_counter() {
         done
     done
     [[ -n $str ]] && bacon_promptc "${BACON_PROMPT_COLOR[counter]:-yellow}" "[$str]"
+}
+
+bacon_prompt_set_theme() {
+    local theme="${1:-$BACON_PROMPT_THEME}"
+    for dir in "${BACON_PROMPT_THEME_DIR[@]}"; do
+        [[ -f $dir/${theme}.theme ]] || continue
+        source "$dir/${theme}.theme" ; return
+    done
+    local IFS=,
+    echo "Fail to set theme [$theme]: Can not find ${theme}.sh.theme in ${BACON_PROMPT_THEME_DIR[*]}."
 }
 
 bacon_prompt_format_expand() {
