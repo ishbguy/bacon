@@ -46,7 +46,7 @@ bacon_prompt_set_theme() {
         source "$dir/${theme}.theme" ; return
     done
     local IFS=,
-    echo "Fail to set theme [$theme]: Can not find ${theme}.sh.theme in ${BACON_PROMPT_THEME_DIR[*]}."
+    echo "Fail to set theme [$theme]: Can not find ${theme}.theme in ${BACON_PROMPT_THEME_DIR[*]}."
 }
 
 bacon_prompt_format_expand() {
