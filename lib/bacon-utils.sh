@@ -156,12 +156,12 @@ bacon_is_sourced() {
 }
 
 bacon_is_array() {
-    mapfile -td ' ' def <<<"$(declare -p "$1" 2>/dev/null)"
+    local -a def=($(declare -p "$1" 2>/dev/null))
     [[ ${def[1]} =~ a ]]
 }
 
 bacon_is_map() {
-    mapfile -td ' ' def <<<"$(declare -p "$1" 2>/dev/null)"
+    local -a def=($(declare -p "$1" 2>/dev/null))
     [[ ${def[1]} =~ A ]]
 }
 
