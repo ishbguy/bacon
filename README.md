@@ -1,7 +1,9 @@
 # [bacon](https://github.com/dotcon/bacon)
 
-[![License][licsvg]][lic]
+[![actions|bats][actions-bats-svg]][actions-bats] [![License][licsvg]][lic]
 
+[actions-bats-svg]: https://github.com/dotcon/bacon/actions/workflows/bats.yml/badge.svg
+[actions-bats]: https://github.com/dotcon/bacon/actions/workflows/bats.yml
 [licsvg]: https://img.shields.io/badge/license-MIT-green.svg
 [lic]: https://github.com/dotcon/bacon/blob/master/LICENSE
 
@@ -28,7 +30,7 @@ A **ba**sh  **con**figuration framework.
 
 ## :straight_ruler: Prerequisite
 
-> + `bash` 4.2 or later
+> + `bash` 4.4 or later
 > + `git`
 > + `sed`
 > + `awk`

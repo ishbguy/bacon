@@ -1,4 +1,4 @@
-name: bacon tests
+name: actions bats
 on: [push, pull_request]
 jobs:
   bats-test:
