@@ -16,11 +16,14 @@ bacon_init() {
     done
 }
 jobs_count() { echo "$BACON_JOBS"; }
-export_ps1() { export PS1="$*"; }
+export_ps1() { export PS1="$*" && unset ps1_running ; }
 bacon_prompt() {
     case $BACON_PROMPT_TYPE in
         normal) export PS1="$(bacon_prompt_ps1)" ;;
-        async)  bacon_async_run -c export_ps1 bacon_prompt_ps1 ;;
+        async) [[ -n $ps1_running ]] && return || {
+            bacon_async_run -c export_ps1 bacon_prompt_ps1
+            export ps1_running=true
+        } ;;
         *)      export PS1='[\A][\u@\h:\W]\$ ';;
     esac
 }
