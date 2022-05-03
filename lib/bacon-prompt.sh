@@ -50,17 +50,17 @@ bacon_prompt_set_theme() {
 }
 
 bacon_prompt_format_expand() {
-    local fmt=$1 local expanded ctx left sp i j k
+    local fmt=$1 expanded ctx left sp i j k
     local -A pairs=(["("]=")" ["{"]="}" ["["]="]")
     local -A cmds=(["("]="__run" ["{"]="__replace" ["["]="__paint")
     __run() { (eval "$@" 2>/dev/null) || true ; }
     __paint() { echo "${BACON_COLOR[$1]}" ; }
     __replace() {
         if [[ -n ${BACON_PROMPT_COLOR[$1]} ]]; then
-                # embedded color & style
-                bacon_promptc "${BACON_PROMPT_COLOR[$1]}" "${BACON_PROMPT_INFO[$1]}"
-            else
-                echo "${BACON_PROMPT_INFO[$1]}"
+            # embedded color & style
+            bacon_promptc "${BACON_PROMPT_COLOR[$1]}" "${BACON_PROMPT_INFO[$1]}"
+        else
+            echo "${BACON_PROMPT_INFO[$1]}"
         fi
     }
     for ((i = 0; i < ${#fmt}; i++)); do
