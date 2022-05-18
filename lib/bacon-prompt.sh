@@ -53,7 +53,7 @@ bacon_prompt_format_expand() {
     local fmt=$1 expanded ctx left sp i j k
     local -A pairs=(["("]=")" ["{"]="}" ["["]="]")
     local -A cmds=(["("]="__run" ["{"]="__replace" ["["]="__paint")
-    __run() { (eval "$@" 2>/dev/null) || true ; }
+    __run() { (eval "$*" 2>/dev/null) || true ; }
     __paint() { echo "${BACON_COLOR[$1]}" ; }
     __replace() {
         if [[ -n ${BACON_PROMPT_COLOR[$1]} ]]; then
@@ -77,7 +77,7 @@ bacon_prompt_format_expand() {
             done
             [[ ${fmt:$j:1} != "${pairs[$left]}" || $sp -ne 0 ]] && break
             ctx="${fmt:$i:$((j-i))}" && ((i = j))
-            expanded+="$(eval "${cmds[$left]}" "$ctx")" ;;
+            expanded+="$(eval "${cmds[$left]}" '$ctx')" ;;
         *)  expanded+="#${fmt:$i:1}" ;;
         esac; break; done
         [[ $j -eq ${#fmt} ]] && ((i = ${#fmt})) && expanded+="${fmt:$k}"
