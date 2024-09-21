@@ -24,7 +24,7 @@ bacon_prompt_git_branch() {
     local tmp=()
     for c in "${bstat[@]:1}"; do
         # prevent special chars to be expand
-        c="${c//\?\?/'\?'}"; c="${c//\!/'!'}"
+        c="${c//\?\?/'?'}"; c="${c//\!/'!'}"
         tmp=($c)
         ((++change[${tmp[0]}]))
     done
