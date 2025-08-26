@@ -19,7 +19,7 @@ bacon_prompt_git_branch() {
 
     brch="${brchi[1]//..*/}"
     # check whether the local repo is different from remote tracked repo
-    [[ -n ${brchi[2]} && ${brchi[*]:2} =~ '[' ]] && brch+="${trki[${brchi[2]#[}]}${brchi[3]%]}"
+    [[ -n ${brchi[2]} && ${brchi[*]:2} =~ '[' ]] && brch+="${trki[${brchi[2]#[}]}${brchi[3]%+(,|])*}"
     local c
     local tmp=()
     for c in "${bstat[@]:1}"; do
